@@ -20,6 +20,64 @@ class GoogleReviews extends AbstractWidget {
         return self::$instance;
     }
 
+    public function get_meta() {
+        return [
+            'id'          => $this->shortcode,
+            'label'       => __( 'Google Reviews', 'weblock-widgets' ),
+            'icon'        => 'star-filled',
+            'color'       => '#fbbc04',
+            'description' => __( 'Google Cégem értékelések megjelenítése a Google Places API-ról.', 'weblock-widgets' ),
+            'fields'      => [
+                [
+                    'name'        => 'place_id',
+                    'label'       => __( 'Google Place ID', 'weblock-widgets' ),
+                    'type'        => 'text',
+                    'required'    => true,
+                    'placeholder' => 'ChIJN1t_tDeuEmsRUsoyG83frY4',
+                    'help'        => __( 'A Google Place ID-t itt találod: https://developers.google.com/maps/documentation/places/web-service/place-id', 'weblock-widgets' ),
+                ],
+                [
+                    'name'    => 'count',
+                    'label'   => __( 'Vélemények száma', 'weblock-widgets' ),
+                    'type'    => 'number',
+                    'default' => 6,
+                    'min'     => 1,
+                    'max'     => 5,
+                    'help'    => __( 'A Google API maximum 5 véleményt ad vissza egy hívásra.', 'weblock-widgets' ),
+                ],
+                [
+                    'name'    => 'layout',
+                    'label'   => __( 'Elrendezés', 'weblock-widgets' ),
+                    'type'    => 'select',
+                    'default' => 'grid',
+                    'options' => [
+                        'grid'     => __( 'Rács', 'weblock-widgets' ),
+                        'list'     => __( 'Lista', 'weblock-widgets' ),
+                        'carousel' => __( 'Karusszel', 'weblock-widgets' ),
+                    ],
+                ],
+                [
+                    'name'    => 'min_rating',
+                    'label'   => __( 'Minimum csillagok', 'weblock-widgets' ),
+                    'type'    => 'select',
+                    'default' => 0,
+                    'options' => [
+                        0 => __( 'Mind', 'weblock-widgets' ),
+                        3 => __( '3★ és felette', 'weblock-widgets' ),
+                        4 => __( '4★ és felette', 'weblock-widgets' ),
+                        5 => __( 'Csak 5★', 'weblock-widgets' ),
+                    ],
+                ],
+                [
+                    'name'    => 'show_header',
+                    'label'   => __( 'Fejléc megjelenítése (átlag, csillagok, CTA)', 'weblock-widgets' ),
+                    'type'    => 'toggle',
+                    'default' => 'yes',
+                ],
+            ],
+        ];
+    }
+
     public function render_shortcode( $atts ) {
         $atts = shortcode_atts( [
             'place_id'   => '',

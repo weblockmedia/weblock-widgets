@@ -20,6 +20,42 @@ class InstagramFeed extends AbstractWidget {
         return self::$instance;
     }
 
+    public function get_meta() {
+        return [
+            'id'          => $this->shortcode,
+            'label'       => __( 'Instagram Feed', 'weblock-widgets' ),
+            'icon'        => 'instagram',
+            'color'       => '#E1306C',
+            'description' => __( 'Legutóbbi Instagram posztok az oldal Instagram fiókjából.', 'weblock-widgets' ),
+            'fields'      => [
+                [
+                    'name'    => 'count',
+                    'label'   => __( 'Posztok száma', 'weblock-widgets' ),
+                    'type'    => 'number',
+                    'default' => 9,
+                    'min'     => 1,
+                    'max'     => 25,
+                ],
+                [
+                    'name'    => 'layout',
+                    'label'   => __( 'Elrendezés', 'weblock-widgets' ),
+                    'type'    => 'select',
+                    'default' => 'grid',
+                    'options' => [
+                        'grid'   => __( 'Rács', 'weblock-widgets' ),
+                        'slider' => __( 'Karusszel', 'weblock-widgets' ),
+                    ],
+                ],
+                [
+                    'name'    => 'show_caption',
+                    'label'   => __( 'Felirat hover-en mutatva', 'weblock-widgets' ),
+                    'type'    => 'toggle',
+                    'default' => 'no',
+                ],
+            ],
+        ];
+    }
+
     public function render_shortcode( $atts ) {
         $atts = shortcode_atts( [
             'count'  => 9,

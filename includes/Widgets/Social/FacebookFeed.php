@@ -20,6 +20,42 @@ class FacebookFeed extends AbstractWidget {
         return self::$instance;
     }
 
+    public function get_meta() {
+        return [
+            'id'          => $this->shortcode,
+            'label'       => __( 'Facebook Feed', 'weblock-widgets' ),
+            'icon'        => 'facebook',
+            'color'       => '#1877F2',
+            'description' => __( 'Legutóbbi posztok az oldal Facebook oldaláról.', 'weblock-widgets' ),
+            'fields'      => [
+                [
+                    'name'    => 'count',
+                    'label'   => __( 'Posztok száma', 'weblock-widgets' ),
+                    'type'    => 'number',
+                    'default' => 5,
+                    'min'     => 1,
+                    'max'     => 25,
+                ],
+                [
+                    'name'    => 'layout',
+                    'label'   => __( 'Elrendezés', 'weblock-widgets' ),
+                    'type'    => 'select',
+                    'default' => 'list',
+                    'options' => [
+                        'list' => __( 'Lista', 'weblock-widgets' ),
+                        'grid' => __( 'Rács', 'weblock-widgets' ),
+                    ],
+                ],
+                [
+                    'name'    => 'show_image',
+                    'label'   => __( 'Borítókép megjelenítése', 'weblock-widgets' ),
+                    'type'    => 'toggle',
+                    'default' => 'yes',
+                ],
+            ],
+        ];
+    }
+
     public function render_shortcode( $atts ) {
         $atts = shortcode_atts( [
             'count'  => 5,

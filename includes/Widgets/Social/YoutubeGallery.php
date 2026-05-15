@@ -20,6 +20,50 @@ class YoutubeGallery extends AbstractWidget {
         return self::$instance;
     }
 
+    public function get_meta() {
+        return [
+            'id'          => $this->shortcode,
+            'label'       => __( 'YouTube Gallery', 'weblock-widgets' ),
+            'icon'        => 'video-alt3',
+            'color'       => '#FF0000',
+            'description' => __( 'YouTube csatorna utolsó videói vagy egy playlist videói.', 'weblock-widgets' ),
+            'fields'      => [
+                [
+                    'name'        => 'channel_id',
+                    'label'       => __( 'YouTube csatorna ID', 'weblock-widgets' ),
+                    'type'        => 'text',
+                    'placeholder' => 'UCBR8-60-B28hp2BmDPdntcQ',
+                    'help'        => __( 'A csatorna URL-jében az UC kezdetű string. Vagy hagyd üresen és add meg a playlist ID-t.', 'weblock-widgets' ),
+                ],
+                [
+                    'name'        => 'playlist_id',
+                    'label'       => __( 'VAGY Playlist ID', 'weblock-widgets' ),
+                    'type'        => 'text',
+                    'placeholder' => 'PLxxxxxxxxxxxx',
+                    'help'        => __( 'Ha kitöltöd, ez prioritást élvez a csatorna ID felett.', 'weblock-widgets' ),
+                ],
+                [
+                    'name'    => 'count',
+                    'label'   => __( 'Videók száma', 'weblock-widgets' ),
+                    'type'    => 'number',
+                    'default' => 6,
+                    'min'     => 1,
+                    'max'     => 25,
+                ],
+                [
+                    'name'    => 'layout',
+                    'label'   => __( 'Elrendezés', 'weblock-widgets' ),
+                    'type'    => 'select',
+                    'default' => 'grid',
+                    'options' => [
+                        'grid' => __( 'Rács', 'weblock-widgets' ),
+                        'list' => __( 'Lista', 'weblock-widgets' ),
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public function render_shortcode( $atts ) {
         $atts = shortcode_atts( [
             'channel_id'  => '',

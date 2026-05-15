@@ -19,6 +19,47 @@ class GoogleMaps extends AbstractWidget {
         return self::$instance;
     }
 
+    public function get_meta() {
+        return [
+            'id'          => $this->shortcode,
+            'label'       => __( 'Google Map', 'weblock-widgets' ),
+            'icon'        => 'location-alt',
+            'color'       => '#34A853',
+            'description' => __( 'Beágyazott Google térkép címmel vagy Place ID-vel.', 'weblock-widgets' ),
+            'fields'      => [
+                [
+                    'name'        => 'address',
+                    'label'       => __( 'Cím', 'weblock-widgets' ),
+                    'type'        => 'text',
+                    'placeholder' => 'Budapest, Király u. 1.',
+                    'help'        => __( 'Vagy hagyd üresen és használd a Place ID-t.', 'weblock-widgets' ),
+                ],
+                [
+                    'name'        => 'place_id',
+                    'label'       => __( 'VAGY Place ID', 'weblock-widgets' ),
+                    'type'        => 'text',
+                    'placeholder' => 'ChIJ...',
+                ],
+                [
+                    'name'    => 'zoom',
+                    'label'   => __( 'Zoom szint', 'weblock-widgets' ),
+                    'type'    => 'number',
+                    'default' => 15,
+                    'min'     => 1,
+                    'max'     => 21,
+                ],
+                [
+                    'name'    => 'height',
+                    'label'   => __( 'Magasság (px)', 'weblock-widgets' ),
+                    'type'    => 'number',
+                    'default' => 400,
+                    'min'     => 150,
+                    'max'     => 1200,
+                ],
+            ],
+        ];
+    }
+
     public function render_shortcode( $atts ) {
         $atts = shortcode_atts( [
             'address'  => '',

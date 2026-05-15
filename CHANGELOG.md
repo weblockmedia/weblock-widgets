@@ -2,6 +2,32 @@
 
 A formátum [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) szerint, verziózás [Semantic Versioning](https://semver.org/lang/hu/).
 
+## [0.2.0] — 2026-05-15
+
+### Hozzáadva — vizuális admin felület
+- **Widget galéria** — 5 widget kártya ikonnal, leírással, API-státusz badge-dzsel (Beállítva / API kulcs kell)
+- **Konfigurátor oldal** widgetenkénti paraméter-űrlappal
+  - Mező-típusok: text, number, select, toggle (kapcsoló)
+  - Kötelező mezők jelzése, segédszövegek (help), placeholder-ek
+  - Élő shortcode-generálás minden form-változásra
+  - Default értékeknél a paraméter NEM kerül be a shortcode-ba (tisztább kimenet)
+- **AJAX előnézet** — `do_shortcode()` futtatás admin-only endpoint-ról, debounce-olva (600 ms)
+- **Vágólapra másolás** — Clipboard API + `execCommand` fallback
+- **Tab-os admin szerkezet**:
+  - `Widgetek` (default landing) — galéria + konfigurátor
+  - `Beállítások` — API kulcsok + Cache (TTL + flush)
+  - `Súgó` — API kulcs beszerzési útmutatók
+- Reszponzív admin CSS (mobile-first, 4 töréspont)
+- Frontend `widgets.css` betöltése az admin felületben az élő preview hűségéhez
+
+### Változott
+- `AbstractWidget` osztály bővítve `get_meta()` metódussal (id, label, icon, color, description, fields[])
+- Az 5 widget mindegyike implementálja `get_meta()`-t — generic UI-render
+
+### Megjegyzés
+- Shortcode-okat továbbra is támogatja, csak már NEM KÖTELEZŐ kézzel megírni
+- Gutenberg block-ok érintetlenül működnek
+
 ## [0.1.0] — 2026-05-15
 
 ### Hozzáadva

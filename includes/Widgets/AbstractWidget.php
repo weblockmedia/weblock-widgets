@@ -20,6 +20,21 @@ abstract class AbstractWidget {
 
     abstract public function render_shortcode( $atts );
 
+    /**
+     * Widget metaadat a vizuális admin generátorhoz.
+     * Visszaad: id, label, icon (dashicon), description, color, fields[].
+     */
+    public function get_meta() {
+        return [
+            'id'          => $this->shortcode,
+            'label'       => $this->shortcode,
+            'icon'        => 'screenoptions',
+            'color'       => '#1a73e8',
+            'description' => '',
+            'fields'      => [],
+        ];
+    }
+
     public function register_block() {
         if ( ! function_exists( 'register_block_type' ) ) {
             return;
