@@ -4,7 +4,7 @@ Tags: google reviews, instagram, facebook, youtube, google maps
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 0.6.0
+Stable tag: 0.6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,11 @@ A `weblock-widgets` plugin a Weblock Group saját, agency-tulajdonú megoldása 
 4. Használd a shortcode-okat vagy a Gutenberg blokkokat
 
 == Changelog ==
+
+= 0.6.1 =
+* ÚJ: Kategória-szűrő pill tab-okkal (Mind / Vélemények / Közösségi / Trust / Eszközök / Galéria / Értékesítés / Kapcsolat / Form)
+* ÚJ: Keresőmező a widget galéria fölött (élő szűrés név + leírás alapján, ESC ürítés)
+* Tab-ok mutatják a widget számot kategóriánként, üres kategóriák elrejtve
 
 = 0.6.0 =
 * ÚJ: Twitter / X Feed widget (no API) — felhasználónév-alapú timeline, hivatalos Twitter widgets.js

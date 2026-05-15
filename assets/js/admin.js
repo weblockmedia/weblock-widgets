@@ -251,5 +251,54 @@
         refreshPreview(form, true);
     }
 
-    document.addEventListener('DOMContentLoaded', initConfigurator);
+    function initGalleryFilter() {
+        var gallery = document.querySelector('[data-wlw-gallery]');
+        if (!gallery) return;
+        var tabs    = document.querySelectorAll('.wlw-tab');
+        var search  = document.getElementById('wlw-gallery-search');
+        var cards   = gallery.querySelectorAll('.wlw-card');
+        var empty   = gallery.querySelector('.wlw-gallery__empty');
+        var state   = { cat: 'all', q: '' };
+
+        function apply() {
+            var q = state.q.trim().toLowerCase();
+            var visible = 0;
+            cards.forEach(function (card) {
+                var matchCat = state.cat === 'all' || card.getAttribute('data-wlw-cat') === state.cat;
+                var matchQ   = !q || (card.getAttribute('data-wlw-search') || '').indexOf(q) !== -1;
+                var show = matchCat && matchQ;
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            if (empty) empty.hidden = visible !== 0;
+        }
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                tabs.forEach(function (t) {
+                    t.classList.remove('is-active');
+                    t.setAttribute('aria-selected', 'false');
+                });
+                tab.classList.add('is-active');
+                tab.setAttribute('aria-selected', 'true');
+                state.cat = tab.getAttribute('data-wlw-cat') || 'all';
+                apply();
+            });
+        });
+
+        if (search) {
+            search.addEventListener('input', function () {
+                state.q = search.value;
+                apply();
+            });
+            search.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') { search.value = ''; state.q = ''; apply(); }
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initConfigurator();
+        initGalleryFilter();
+    });
 })();

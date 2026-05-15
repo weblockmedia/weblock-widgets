@@ -218,20 +218,79 @@ class Admin {
         <?php
     }
 
+    private function get_categories() {
+        return [
+            'all'      => [ 'label' => __( 'Mind', 'weblock-widgets' ),         'icon' => 'grid-view' ],
+            'reviews'  => [ 'label' => __( 'Vélemények', 'weblock-widgets' ),   'icon' => 'star-filled' ],
+            'social'   => [ 'label' => __( 'Közösségi', 'weblock-widgets' ),    'icon' => 'share' ],
+            'trust'    => [ 'label' => __( 'Trust', 'weblock-widgets' ),        'icon' => 'shield' ],
+            'tools'    => [ 'label' => __( 'Eszközök', 'weblock-widgets' ),     'icon' => 'admin-tools' ],
+            'gallery'  => [ 'label' => __( 'Galéria', 'weblock-widgets' ),      'icon' => 'format-gallery' ],
+            'sales'    => [ 'label' => __( 'Értékesítés', 'weblock-widgets' ),  'icon' => 'cart' ],
+            'contact'  => [ 'label' => __( 'Kapcsolat', 'weblock-widgets' ),    'icon' => 'phone' ],
+            'forms'    => [ 'label' => __( 'Form', 'weblock-widgets' ),         'icon' => 'feedback' ],
+        ];
+    }
+
     private function render_gallery( $widgets ) {
+        $categories  = $this->get_categories();
+        $counts      = array_fill_keys( array_keys( $categories ), 0 );
+        $counts['all'] = count( $widgets );
+        foreach ( $widgets as $w ) {
+            $cat = $w['category'] ?? 'tools';
+            if ( isset( $counts[ $cat ] ) ) {
+                $counts[ $cat ]++;
+            }
+        }
         ?>
         <p class="wlw-lead"><?php esc_html_e( 'Válassz egy widgetet, állítsd be a paramétereket, majd egyetlen kattintással másold a kész shortcode-ot bármelyik oldalra vagy posztba.', 'weblock-widgets' ); ?></p>
 
-        <div class="wlw-gallery">
+        <div class="wlw-toolbar">
+            <div class="wlw-search">
+                <span class="dashicons dashicons-search" aria-hidden="true"></span>
+                <input
+                    type="search"
+                    id="wlw-gallery-search"
+                    placeholder="<?php esc_attr_e( 'Keresés widget név vagy leírás alapján…', 'weblock-widgets' ); ?>"
+                    autocomplete="off"
+                    aria-label="<?php esc_attr_e( 'Widget keresés', 'weblock-widgets' ); ?>"
+                />
+            </div>
+
+            <nav class="wlw-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Widget kategóriák', 'weblock-widgets' ); ?>">
+                <?php foreach ( $categories as $key => $cat ) :
+                    if ( 'all' !== $key && empty( $counts[ $key ] ) ) { continue; }
+                ?>
+                    <button
+                        type="button"
+                        class="wlw-tab<?php echo 'all' === $key ? ' is-active' : ''; ?>"
+                        data-wlw-cat="<?php echo esc_attr( $key ); ?>"
+                        role="tab"
+                        aria-selected="<?php echo 'all' === $key ? 'true' : 'false'; ?>">
+                        <span class="dashicons dashicons-<?php echo esc_attr( $cat['icon'] ); ?>" aria-hidden="true"></span>
+                        <span class="wlw-tab__label"><?php echo esc_html( $cat['label'] ); ?></span>
+                        <span class="wlw-tab__count"><?php echo (int) $counts[ $key ]; ?></span>
+                    </button>
+                <?php endforeach; ?>
+            </nav>
+        </div>
+
+        <div class="wlw-gallery" data-wlw-gallery>
             <?php foreach ( $widgets as $w ) :
                 $needs_api = ! empty( $w['requires_api'] );
                 $ready     = $this->widget_api_status( $w['id'] );
+                $cat       = $w['category'] ?? 'tools';
                 $url = add_query_arg( [
                     'page'   => 'weblock-widgets',
                     'widget' => $w['id'],
                 ], admin_url( 'admin.php' ) );
+                $search_haystack = strtolower( $w['label'] . ' ' . ( $w['description'] ?? '' ) );
             ?>
-                <a class="wlw-card" href="<?php echo esc_url( $url ); ?>" style="--wlw-card-color: <?php echo esc_attr( $w['color'] ); ?>">
+                <a class="wlw-card"
+                   href="<?php echo esc_url( $url ); ?>"
+                   data-wlw-cat="<?php echo esc_attr( $cat ); ?>"
+                   data-wlw-search="<?php echo esc_attr( $search_haystack ); ?>"
+                   style="--wlw-card-color: <?php echo esc_attr( $w['color'] ); ?>">
                     <span class="wlw-card__icon dashicons dashicons-<?php echo esc_attr( $w['icon'] ); ?>" aria-hidden="true"></span>
                     <span class="wlw-card__body">
                         <span class="wlw-card__label"><?php echo esc_html( $w['label'] ); ?></span>
@@ -251,16 +310,7 @@ class Admin {
                     </span>
                 </a>
             <?php endforeach; ?>
-        </div>
-
-        <div class="wlw-notice">
-            <h3><?php esc_html_e( 'Hogyan használd?', 'weblock-widgets' ); ?></h3>
-            <ol>
-                <li><?php esc_html_e( 'Kattints egy widget kártyára.', 'weblock-widgets' ); ?></li>
-                <li><?php esc_html_e( 'Töltsd ki a paramétereket — látod az élő előnézetet.', 'weblock-widgets' ); ?></li>
-                <li><?php esc_html_e( '"Shortcode másolása" gombbal vágólapra.', 'weblock-widgets' ); ?></li>
-                <li><?php esc_html_e( 'Illeszd be bármilyen oldalra (Gutenberg "Shortcode" block, klasszikus editor, Bricks/Elementor shortcode element).', 'weblock-widgets' ); ?></li>
-            </ol>
+            <p class="wlw-gallery__empty" hidden><?php esc_html_e( 'Nincs találat a megadott szűrőkre.', 'weblock-widgets' ); ?></p>
         </div>
         <?php
     }

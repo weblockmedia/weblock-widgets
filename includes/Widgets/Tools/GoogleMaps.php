@@ -25,6 +25,7 @@ class GoogleMaps extends AbstractWidget {
             'label'       => __( 'Google Map', 'weblock-widgets' ),
             'icon'        => 'location-alt',
             'color'       => '#34A853',
+            'category'    => 'tools',
             'description' => __( 'Beágyazott Google térkép címmel (nem kell API kulcs).', 'weblock-widgets' ),
             'requires_api'=> false,
             'fields'      => [

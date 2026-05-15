@@ -25,6 +25,7 @@ class TwitterFeed extends AbstractWidget {
             'label'       => __( 'Twitter / X Feed', 'weblock-widgets' ),
             'icon'        => 'twitter',
             'color'       => '#000000',
+            'category'    => 'social',
             'description' => __( 'Twitter / X timeline beágyazása felhasználónévvel (nem kell API kulcs).', 'weblock-widgets' ),
             'requires_api'=> false,
             'fields'      => [

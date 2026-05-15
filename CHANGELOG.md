@@ -2,6 +2,23 @@
 
 A formátum [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) szerint, verziózás [Semantic Versioning](https://semver.org/lang/hu/).
 
+## [0.6.1] — 2026-05-15
+
+### Hozzáadva
+- **Kategória-szűrő** a widget galéria fölött pill-stílusú tab-okkal
+  - 9 kategória: Mind / Vélemények / Közösségi / Trust / Eszközök / Galéria / Értékesítés / Kapcsolat / Form
+  - Tab-ok dashicon ikonokkal + widget-számláló
+  - Üres kategóriák elrejtve (csak akkor jelennek meg ha van bennük widget)
+  - Mobilon csak ikonok (label rejtve), horizontal scroll
+- **Élő keresőmező** felül, kerekített dizájn
+  - Név + leírás alapján szűr, instant (data-attribute-okból, kliens-oldali)
+  - ESC üríti a keresést
+- "Nincs találat" placeholder ha kombinált szűrő nem ad eredményt
+
+### Változott
+- `AbstractWidget::get_meta()` `category` mezővel bővítve (default `tools`)
+- 8 meglévő widget mindegyikében `category` beállítva: `reviews` (1), `social` (6), `tools` (1)
+
 ## [0.6.0] — 2026-05-15
 
 ### Hozzáadva

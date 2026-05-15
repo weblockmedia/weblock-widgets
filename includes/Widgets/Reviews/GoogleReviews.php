@@ -26,6 +26,7 @@ class GoogleReviews extends AbstractWidget {
             'label'       => __( 'Google Reviews', 'weblock-widgets' ),
             'icon'        => 'star-filled',
             'color'       => '#fbbc04',
+            'category'    => 'reviews',
             'description' => __( 'Google Cégem értékelések megjelenítése a Google Places API-ról.', 'weblock-widgets' ),
             'fields'      => [
                 [

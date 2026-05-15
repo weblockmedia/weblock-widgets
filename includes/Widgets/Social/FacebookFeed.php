@@ -25,6 +25,7 @@ class FacebookFeed extends AbstractWidget {
             'label'       => __( 'Facebook Feed', 'weblock-widgets' ),
             'icon'        => 'facebook',
             'color'       => '#1877F2',
+            'category'    => 'social',
             'description' => __( 'Facebook oldal posztjai a hivatalos Page Plugin-nal (nem kell API kulcs).', 'weblock-widgets' ),
             'requires_api'=> false,
             'fields'      => [

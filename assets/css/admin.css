@@ -36,6 +36,100 @@
     margin: 0 0 1.5rem;
 }
 
+/* ===== Toolbar (search + tabs) ===== */
+.wlw-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.wlw-search {
+    position: relative;
+    max-width: 480px;
+}
+.wlw-search .dashicons {
+    position: absolute;
+    top: 50%; left: 0.75rem;
+    transform: translateY(-50%);
+    color: var(--wlw-muted);
+    pointer-events: none;
+}
+.wlw-search input {
+    width: 100%;
+    padding: 0.6rem 0.75rem 0.6rem 2.25rem;
+    min-height: 44px;
+    border: 1px solid var(--wlw-border);
+    border-radius: 999px;
+    font-size: 0.95rem;
+    background: var(--wlw-bg);
+    transition: border-color .15s, box-shadow .15s;
+}
+.wlw-search input:focus {
+    border-color: var(--wlw-primary);
+    box-shadow: 0 0 0 3px rgba(34,113,177,0.18);
+    outline: none;
+}
+
+.wlw-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    scrollbar-width: thin;
+}
+.wlw-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    min-height: 36px;
+    border: 1px solid var(--wlw-border);
+    border-radius: 999px;
+    background: var(--wlw-bg);
+    color: var(--wlw-text);
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-family: inherit;
+    transition: all .15s ease;
+    white-space: nowrap;
+}
+.wlw-tab:hover {
+    background: var(--wlw-bg-alt);
+    border-color: var(--wlw-primary);
+}
+.wlw-tab.is-active {
+    background: var(--wlw-primary);
+    border-color: var(--wlw-primary);
+    color: #fff;
+}
+.wlw-tab .dashicons { font-size: 16px; width: 16px; height: 16px; }
+.wlw-tab__count {
+    background: rgba(0,0,0,0.08);
+    padding: 0 0.45rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 1.5em;
+    text-align: center;
+}
+.wlw-tab.is-active .wlw-tab__count { background: rgba(255,255,255,0.25); }
+
+.wlw-gallery__empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--wlw-muted);
+    padding: 3rem 1rem;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 600px) {
+    .wlw-tab__label { display: none; }
+    .wlw-tab { padding: 0.4rem 0.55rem; }
+    .wlw-tab .dashicons { margin: 0; }
+}
+
 /* ===== Widget Gallery ===== */
 .wlw-gallery {
     display: grid;

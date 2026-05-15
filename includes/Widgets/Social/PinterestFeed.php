@@ -25,6 +25,7 @@ class PinterestFeed extends AbstractWidget {
             'label'       => __( 'Pinterest Feed', 'weblock-widgets' ),
             'icon'        => 'pinterest',
             'color'       => '#E60023',
+            'category'    => 'social',
             'description' => __( 'Pinterest profil, board vagy egyes pin beágyazása (nem kell API kulcs).', 'weblock-widgets' ),
             'requires_api'=> false,
             'fields'      => [

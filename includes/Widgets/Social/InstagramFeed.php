@@ -25,6 +25,7 @@ class InstagramFeed extends AbstractWidget {
             'label'       => __( 'Instagram Feed', 'weblock-widgets' ),
             'icon'        => 'instagram',
             'color'       => '#E1306C',
+            'category'    => 'social',
             'description' => __( 'Konkrét Instagram posztok beágyazva (nem kell API kulcs).', 'weblock-widgets' ),
             'requires_api'=> false,
             'fields'      => [

@@ -25,6 +25,7 @@ class TikTokFeed extends AbstractWidget {
             'label'       => __( 'TikTok Feed', 'weblock-widgets' ),
             'icon'        => 'format-video',
             'color'       => '#000000',
+            'category'    => 'social',
             'description' => __( 'TikTok videók beágyazása URL-lista alapján (nem kell API kulcs).', 'weblock-widgets' ),
             'requires_api'=> false,
             'fields'      => [

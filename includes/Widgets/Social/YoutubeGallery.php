@@ -26,6 +26,7 @@ class YoutubeGallery extends AbstractWidget {
             'label'       => __( 'YouTube Gallery', 'weblock-widgets' ),
             'icon'        => 'video-alt3',
             'color'       => '#FF0000',
+            'category'    => 'social',
             'description' => __( 'YouTube csatorna utolsó videói vagy egy playlist videói (nem kell API kulcs).', 'weblock-widgets' ),
             'requires_api'=> false,
             'fields'      => [

@@ -30,6 +30,7 @@ abstract class AbstractWidget {
             'label'       => $this->shortcode,
             'icon'        => 'screenoptions',
             'color'       => '#1a73e8',
+            'category'    => 'tools',
             'description' => '',
             'fields'      => [],
         ];
