@@ -4,7 +4,7 @@ Tags: google reviews, instagram, facebook, youtube, google maps
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 0.2.0
+Stable tag: 0.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,10 @@ A `weblock-widgets` plugin a Weblock Group saját, agency-tulajdonú megoldása 
 4. Használd a shortcode-okat vagy a Gutenberg blokkokat
 
 == Changelog ==
+
+= 0.3.0 =
+* ÚJ: Place ID kereső a Google Reviews konfigurátorban — beírod a cégnevet + várost, kilistázza a Google találatokat, klikk → auto-kitölti a Place ID-t
+* AJAX endpoint: `wlw_search_place` (Google Places Text Search API)
 
 = 0.2.0 =
 * ÚJ: Vizuális admin felület — widget galéria kártyákkal, paraméter-konfigurátor élő előnézettel

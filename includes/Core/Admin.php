@@ -22,6 +22,53 @@ class Admin {
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
         add_action( 'admin_post_wlw_flush_cache', [ $this, 'handle_flush_cache' ] );
         add_action( 'wp_ajax_wlw_preview', [ $this, 'ajax_preview' ] );
+        add_action( 'wp_ajax_wlw_search_place', [ $this, 'ajax_search_place' ] );
+    }
+
+    public function ajax_search_place() {
+        check_ajax_referer( 'wlw_preview', 'nonce' );
+        if ( ! current_user_can( 'edit_posts' ) ) {
+            wp_send_json_error( [ 'message' => 'forbidden' ], 403 );
+        }
+        $query = isset( $_POST['query'] ) ? sanitize_text_field( wp_unslash( $_POST['query'] ) ) : '';
+        if ( strlen( $query ) < 3 ) {
+            wp_send_json_error( [ 'message' => 'too short' ], 400 );
+        }
+        $settings = get_option( 'wlw_settings', [] );
+        $key = $settings['google_api_key'] ?? '';
+        if ( ! $key ) {
+            wp_send_json_error( [ 'message' => __( 'Hiányzó Google API kulcs.', 'weblock-widgets' ) ], 400 );
+        }
+
+        $url = add_query_arg( [
+            'query'    => $query,
+            'language' => 'hu',
+            'key'      => $key,
+        ], 'https://maps.googleapis.com/maps/api/place/textsearch/json' );
+
+        $response = wp_remote_get( $url, [ 'timeout' => 15 ] );
+        if ( is_wp_error( $response ) ) {
+            wp_send_json_error( [ 'message' => $response->get_error_message() ], 500 );
+        }
+        $data = json_decode( wp_remote_retrieve_body( $response ), true );
+        if ( ! is_array( $data ) ) {
+            wp_send_json_error( [ 'message' => 'invalid response' ], 500 );
+        }
+        if ( isset( $data['status'] ) && 'OK' !== $data['status'] && 'ZERO_RESULTS' !== $data['status'] ) {
+            wp_send_json_error( [ 'message' => $data['status'] . ': ' . ( $data['error_message'] ?? '' ) ], 400 );
+        }
+        $results = [];
+        foreach ( ( $data['results'] ?? [] ) as $r ) {
+            $results[] = [
+                'place_id' => $r['place_id'] ?? '',
+                'name'     => $r['name'] ?? '',
+                'address'  => $r['formatted_address'] ?? '',
+                'rating'   => isset( $r['rating'] ) ? (float) $r['rating'] : 0,
+                'count'    => isset( $r['user_ratings_total'] ) ? (int) $r['user_ratings_total'] : 0,
+            ];
+            if ( count( $results ) >= 5 ) break;
+        }
+        wp_send_json_success( [ 'results' => $results ] );
     }
 
     public function register_menu() {
@@ -321,7 +368,41 @@ class Admin {
                 <?php if ( $required ) : ?><span class="wlw-field__required" aria-label="kötelező">*</span><?php endif; ?>
             </label>
 
-            <?php if ( 'select' === $type ) : ?>
+            <?php if ( 'place_search' === $type ) : ?>
+                <div class="wlw-place-search" data-wlw-place>
+                    <div class="wlw-place-search__row">
+                        <input
+                            type="text"
+                            id="<?php echo esc_attr( $id ); ?>-q"
+                            placeholder="<?php echo esc_attr( $placeholder ); ?>"
+                            data-wlw-place-query
+                            class="regular-text"
+                            autocomplete="off"
+                        />
+                        <button type="button" class="button" data-wlw-place-go>
+                            <span class="dashicons dashicons-search"></span>
+                            <?php esc_html_e( 'Keresés', 'weblock-widgets' ); ?>
+                        </button>
+                    </div>
+                    <input
+                        type="hidden"
+                        id="<?php echo esc_attr( $id ); ?>"
+                        name="<?php echo esc_attr( $name ); ?>"
+                        value="<?php echo esc_attr( $default ); ?>"
+                        data-wlw-input
+                        data-default=""
+                        <?php echo $required ? 'required' : ''; ?>
+                    />
+                    <div class="wlw-place-search__results" data-wlw-place-results hidden></div>
+                    <div class="wlw-place-search__selected" data-wlw-place-selected hidden>
+                        <span class="dashicons dashicons-yes-alt"></span>
+                        <span data-wlw-place-name></span>
+                        <code data-wlw-place-id></code>
+                        <button type="button" class="button-link" data-wlw-place-clear><?php esc_html_e( 'Csere', 'weblock-widgets' ); ?></button>
+                    </div>
+                </div>
+
+            <?php elseif ( 'select' === $type ) : ?>
                 <select id="<?php echo esc_attr( $id ); ?>" name="<?php echo esc_attr( $name ); ?>" data-wlw-input data-default="<?php echo esc_attr( $default ); ?>">
                     <?php foreach ( ( $field['options'] ?? [] ) as $val => $opt_label ) : ?>
                         <option value="<?php echo esc_attr( $val ); ?>" <?php selected( (string) $default, (string) $val ); ?>>

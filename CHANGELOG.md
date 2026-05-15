@@ -2,6 +2,22 @@
 
 A formátum [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) szerint, verziózás [Semantic Versioning](https://semver.org/lang/hu/).
 
+## [0.3.0] — 2026-05-15
+
+### Hozzáadva
+- **Place ID kereső** a Google Reviews konfigurátorban
+  - Cégnév + város beírásra Google Places Text Search-re hív
+  - Eredmény-lista: név + csillag-rating + cím
+  - Klikk találatra → auto-kitölti a hidden `place_id` mezőt
+  - Ha közvetlenül `ChIJ...` Place ID-t írsz be → direkt használja
+  - "Csere" gomb a kiválasztott Place ID cseréjéhez
+- Új `place_search` mezőtípus a `render_field()`-ben (generic, bármilyen widget használhatja)
+- Új AJAX endpoint: `wp_ajax_wlw_search_place` (admin-only, nonce-védett)
+
+### Változott
+- Google Reviews `place_id` mező type-ja `text` → `place_search`
+- Mező címke: "Google Place ID" → "Cégnév vagy Google Place ID"
+
 ## [0.2.0] — 2026-05-15
 
 ### Hozzáadva — vizuális admin felület

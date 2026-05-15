@@ -30,11 +30,11 @@ class GoogleReviews extends AbstractWidget {
             'fields'      => [
                 [
                     'name'        => 'place_id',
-                    'label'       => __( 'Google Place ID', 'weblock-widgets' ),
-                    'type'        => 'text',
+                    'label'       => __( 'Cégnév vagy Google Place ID', 'weblock-widgets' ),
+                    'type'        => 'place_search',
                     'required'    => true,
-                    'placeholder' => 'ChIJN1t_tDeuEmsRUsoyG83frY4',
-                    'help'        => __( 'A Google Place ID-t itt találod: https://developers.google.com/maps/documentation/places/web-service/place-id', 'weblock-widgets' ),
+                    'placeholder' => __( 'pl.: Weblock Group Budapest', 'weblock-widgets' ),
+                    'help'        => __( 'Írd be a cég nevét (+ várost) és kattints a Keresés gombra, vagy közvetlenül ChIJ-vel kezdődő Place ID-t.', 'weblock-widgets' ),
                 ],
                 [
                     'name'    => 'count',

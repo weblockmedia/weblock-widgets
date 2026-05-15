@@ -191,6 +191,81 @@
     font-size: 0.85rem;
 }
 
+/* ===== Place Search ===== */
+.wlw-place-search { display: flex; flex-direction: column; gap: 0.5rem; }
+.wlw-place-search__row {
+    display: flex; gap: 0.5rem;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+.wlw-place-search__row input {
+    flex: 1; min-width: 200px;
+    padding: 0.5rem 0.75rem;
+    min-height: 44px;
+    border: 1px solid var(--wlw-border);
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+.wlw-place-search__row .button {
+    min-height: 44px;
+    display: inline-flex; align-items: center; gap: 0.35rem;
+}
+.wlw-place-search__row .button .dashicons { font-size: 16px; width: 16px; height: 16px; }
+
+.wlw-place-search__results {
+    border: 1px solid var(--wlw-border);
+    border-radius: 4px;
+    background: #fff;
+    max-height: 320px;
+    overflow-y: auto;
+}
+.wlw-place-search__item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.25rem 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--wlw-border);
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--wlw-text);
+    transition: background 0.15s;
+    min-height: 44px;
+}
+.wlw-place-search__item:last-child { border-bottom: 0; }
+.wlw-place-search__item:hover { background: var(--wlw-bg-alt); }
+.wlw-place-search__item-name { font-weight: 600; font-size: 0.95rem; grid-column: 1; }
+.wlw-place-search__item-rating { font-size: 0.85rem; color: #c39200; white-space: nowrap; grid-column: 2; align-self: center; }
+.wlw-place-search__item-addr { font-size: 0.85rem; color: var(--wlw-muted); grid-column: 1 / -1; }
+
+.wlw-place-search__empty,
+.wlw-place-search__loading {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    color: var(--wlw-muted);
+    font-size: 0.9rem;
+}
+
+.wlw-place-search__selected {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(0,163,42,0.08);
+    border: 1px solid rgba(0,163,42,0.3);
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+.wlw-place-search__selected .dashicons { color: var(--wlw-success); }
+.wlw-place-search__selected code {
+    background: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    color: var(--wlw-muted);
+}
+
 /* ===== Toggle ===== */
 .wlw-toggle {
     display: inline-flex; align-items: center; gap: 0.75rem;
