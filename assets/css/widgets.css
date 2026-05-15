@@ -238,6 +238,24 @@
 .wlw-instagram__embed-item { min-width: 0; }
 .wlw-instagram__embed-item .instagram-media { margin: 0 !important; max-width: 100% !important; min-width: 0 !important; width: 100% !important; }
 
+/* ===== TikTok embed (no-API) ===== */
+.wlw-tiktok--embed { width: 100%; }
+.wlw-tiktok__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--wlw-gap);
+    justify-items: center;
+}
+@media (min-width: 768px)  {
+    .wlw-tiktok--embed[style*="--wlw-tt-cols: 2"] .wlw-tiktok__grid,
+    .wlw-tiktok--embed[style*="--wlw-tt-cols: 3"] .wlw-tiktok__grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1200px) {
+    .wlw-tiktok--embed[style*="--wlw-tt-cols: 3"] .wlw-tiktok__grid { grid-template-columns: repeat(3, 1fr); }
+}
+.wlw-tiktok__item { min-width: 0; width: 100%; }
+.wlw-tiktok__item .tiktok-embed { margin: 0 !important; max-width: 100% !important; width: 100% !important; }
+
 /* ===== Facebook embed (no-API Page Plugin) ===== */
 .wlw-facebook--embed { width: 100%; }
 .wlw-facebook--embed iframe {

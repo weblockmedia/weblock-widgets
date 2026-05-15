@@ -27,6 +27,7 @@ class Loader {
         \WeblockWidgets\Widgets\Social\InstagramFeed::instance()->init();
         \WeblockWidgets\Widgets\Social\FacebookFeed::instance()->init();
         \WeblockWidgets\Widgets\Social\YoutubeGallery::instance()->init();
+        \WeblockWidgets\Widgets\Social\TikTokFeed::instance()->init();
         \WeblockWidgets\Widgets\Tools\GoogleMaps::instance()->init();
 
         add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );

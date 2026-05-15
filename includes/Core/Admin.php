@@ -172,6 +172,7 @@ class Admin {
             \WeblockWidgets\Widgets\Reviews\GoogleReviews::instance()->get_meta(),
             \WeblockWidgets\Widgets\Social\InstagramFeed::instance()->get_meta(),
             \WeblockWidgets\Widgets\Social\FacebookFeed::instance()->get_meta(),
+            \WeblockWidgets\Widgets\Social\TikTokFeed::instance()->get_meta(),
             \WeblockWidgets\Widgets\Social\YoutubeGallery::instance()->get_meta(),
             \WeblockWidgets\Widgets\Tools\GoogleMaps::instance()->get_meta(),
         ];
@@ -547,6 +548,7 @@ class Admin {
                         <tr><td><?php esc_html_e( 'Google Map', 'weblock-widgets' ); ?></td><td>❌</td><td>Cím (pl. "Budapest, Király u. 1.")</td></tr>
                         <tr><td><?php esc_html_e( 'Facebook Feed', 'weblock-widgets' ); ?></td><td>❌</td><td>Facebook oldal URL</td></tr>
                         <tr><td><?php esc_html_e( 'Instagram Feed', 'weblock-widgets' ); ?></td><td>❌</td><td>Instagram poszt URL-ek listája</td></tr>
+                        <tr><td><?php esc_html_e( 'TikTok Feed', 'weblock-widgets' ); ?></td><td>❌</td><td>TikTok videó URL-ek listája</td></tr>
                         <tr><td><?php esc_html_e( 'Google Reviews', 'weblock-widgets' ); ?></td><td>✅</td><td>Google API kulcs (ingyenes) + Place ID</td></tr>
                     </tbody>
                 </table>
@@ -568,6 +570,7 @@ class Admin {
                     <li><strong>YouTube Playlist ID:</strong> <?php esc_html_e( 'Playlist-megnyitva URL-ben "list=PL..." → a PL... rész kell.', 'weblock-widgets' ); ?></li>
                     <li><strong>Facebook Page URL:</strong> <?php esc_html_e( 'Az oldalra navigálva fent a böngészősávban (pl. https://www.facebook.com/weblockgroup).', 'weblock-widgets' ); ?></li>
                     <li><strong>Instagram Post URL:</strong> <?php esc_html_e( 'A posztra kattintva a tetején lévő URL (pl. https://www.instagram.com/p/Cxxxxx/).', 'weblock-widgets' ); ?></li>
+                    <li><strong>TikTok Video URL:</strong> <?php esc_html_e( 'A videóra kattintva a böngészősávban (pl. https://www.tiktok.com/@user/video/700...).', 'weblock-widgets' ); ?></li>
                     <li><strong>Google Place ID:</strong> <?php esc_html_e( 'A Google Reviews konfigurátorban beépített kereső megtalálja cégnév alapján.', 'weblock-widgets' ); ?></li>
                 </ul>
             </div>

@@ -2,6 +2,16 @@
 
 A formátum [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) szerint, verziózás [Semantic Versioning](https://semver.org/lang/hu/).
 
+## [0.5.0] — 2026-05-15
+
+### Hozzáadva
+- **TikTok Feed widget** (`[wlw_tiktok_feed]`) — no-API, TikTok hivatalos `embed.js`-szel
+  - Field-ek: `video_urls` (textarea, soronként/vesszővel), `columns` (1-3)
+  - Video ID-t kinyeri a URL-ből regex-szel (`@user/video/ID` vagy `/v/ID` vagy `/t/ID` formák)
+  - Gutenberg block: `weblock-widgets/tiktok-feed`
+- Súgó tábla bővítve a TikTok sorral
+- Frontend CSS: reszponzív grid 1-3 oszlop
+
 ## [0.4.0] — 2026-05-15
 
 ### Hozzáadva
