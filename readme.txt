@@ -4,7 +4,7 @@ Tags: google reviews, instagram, facebook, youtube, google maps
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 0.6.1
+Stable tag: 0.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,13 @@ A `weblock-widgets` plugin a Weblock Group saját, agency-tulajdonú megoldása 
 4. Használd a shortcode-okat vagy a Gutenberg blokkokat
 
 == Changelog ==
+
+= 0.7.0 =
+* ÚJ: Trustmark Badge widget — 11 trust badge (SSL, biztonságos fizetés, spammentes, ingyenes szállítás, 30 napos pénzvisszafizetés, stb.)
+* 3 stílus: Pirula (címke + tooltip), Kompakt, Kártya
+* 3 méret: Kicsi, Közepes, Nagy
+* Új "Trust" kategória a galériában
+* UI: search/tab radius lecsökkentve 999px-ről 4px-re
 
 = 0.6.1 =
 * ÚJ: Kategória-szűrő pill tab-okkal (Mind / Vélemények / Közösségi / Trust / Eszközök / Galéria / Értékesítés / Kapcsolat / Form)

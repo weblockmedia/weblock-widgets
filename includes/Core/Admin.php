@@ -177,6 +177,7 @@ class Admin {
             \WeblockWidgets\Widgets\Social\PinterestFeed::instance()->get_meta(),
             \WeblockWidgets\Widgets\Social\YoutubeGallery::instance()->get_meta(),
             \WeblockWidgets\Widgets\Tools\GoogleMaps::instance()->get_meta(),
+            \WeblockWidgets\Widgets\Trust\TrustmarkBadge::instance()->get_meta(),
         ];
         return $this->widgets_cache;
     }

@@ -2,6 +2,23 @@
 
 A formátum [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) szerint, verziózás [Semantic Versioning](https://semver.org/lang/hu/).
 
+## [0.7.0] — 2026-05-15
+
+### Hozzáadva
+- **Trustmark Badge widget** (`[wlw_trustmark]`) — Trustindex security badges parity
+  - 11 badge: Certified Secure, Secure Checkout, Secure Form, Secure SSL, Secure Login, Issue-Free Orders, Spam Free, Free Shipping, Exceptional Support, Exceptional Customer Service, 30-Day Money-Back Guarantee
+  - 3 stílus: `pill` (címke + tooltip), `compact` (inline pill), `card` (ikon-doboz + szöveg)
+  - 3 méret: `small`, `medium`, `large`
+  - `verified_by` paraméter — saját brand-név a tooltip-en (pl. "Igazolta: Weblock Group")
+  - Inline SVG ikonok (Heroicons-stílusú), nincs külső függőség
+  - Gutenberg block: `weblock-widgets/trustmark`
+- Új `Widgets/Trust/` namespace és `templates/trust/` mappa
+
+### Változott
+- Admin UI: search input és kategória-tab radius `999px` → `4px` (user feedback)
+- Card status badge radius `999px` → `3px`
+- Tab count radius `999px` → `3px`
+
 ## [0.6.1] — 2026-05-15
 
 ### Hozzáadva

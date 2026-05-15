@@ -375,6 +375,95 @@
     .wlw-map iframe { height: min(60vh, 320px); }
 }
 
+/* ===== Trustmark badge ===== */
+.wlw-trustmark {
+    --wlw-tm-color: #16a34a;
+    --wlw-tm-bg: color-mix(in srgb, var(--wlw-tm-color) 12%, #fff);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+    font-family: var(--wlw-font);
+    color: var(--wlw-text, #1a1a1a);
+}
+.wlw-trustmark__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.85rem;
+    background: var(--wlw-tm-bg);
+    border: 1px solid color-mix(in srgb, var(--wlw-tm-color) 30%, transparent);
+    border-radius: 6px;
+    font-weight: 600;
+    color: var(--wlw-tm-color);
+    line-height: 1.2;
+}
+.wlw-trustmark__icon {
+    display: inline-flex;
+    width: 1.15em; height: 1.15em;
+    flex-shrink: 0;
+    color: var(--wlw-tm-color);
+}
+.wlw-trustmark__icon svg { width: 100%; height: 100%; }
+.wlw-trustmark__label {
+    font-size: 0.95em;
+}
+.wlw-trustmark__caption {
+    align-self: flex-start;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+/* Sizes */
+.wlw-trustmark--small  { font-size: 0.82rem; }
+.wlw-trustmark--medium { font-size: 0.95rem; }
+.wlw-trustmark--large  { font-size: 1.1rem; }
+
+/* Compact (inline pill, nincs caption) */
+.wlw-trustmark--compact {
+    flex-direction: row;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.65rem;
+    background: var(--wlw-tm-bg);
+    border: 1px solid color-mix(in srgb, var(--wlw-tm-color) 30%, transparent);
+    border-radius: 4px;
+    color: var(--wlw-tm-color);
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+/* Card (ikon doboz + szöveg) */
+.wlw-trustmark--card {
+    flex-direction: row;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1rem;
+    background: #fff;
+    border: 1px solid var(--wlw-border, #e5e7eb);
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.wlw-trustmark--card .wlw-trustmark__icon-box {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    width: 2.5em; height: 2.5em;
+    background: var(--wlw-tm-bg);
+    color: var(--wlw-tm-color);
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+.wlw-trustmark--card .wlw-trustmark__icon-box svg { width: 60%; height: 60%; }
+.wlw-trustmark--card .wlw-trustmark__body { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+.wlw-trustmark--card .wlw-trustmark__label { font-weight: 600; color: var(--wlw-text, #1a1a1a); }
+
 /* ===== Errors ===== */
 .wlw-error {
     background: #fef2f2;
