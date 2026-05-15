@@ -173,6 +173,8 @@ class Admin {
             \WeblockWidgets\Widgets\Social\InstagramFeed::instance()->get_meta(),
             \WeblockWidgets\Widgets\Social\FacebookFeed::instance()->get_meta(),
             \WeblockWidgets\Widgets\Social\TikTokFeed::instance()->get_meta(),
+            \WeblockWidgets\Widgets\Social\TwitterFeed::instance()->get_meta(),
+            \WeblockWidgets\Widgets\Social\PinterestFeed::instance()->get_meta(),
             \WeblockWidgets\Widgets\Social\YoutubeGallery::instance()->get_meta(),
             \WeblockWidgets\Widgets\Tools\GoogleMaps::instance()->get_meta(),
         ];

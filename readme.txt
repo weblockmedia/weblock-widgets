@@ -4,7 +4,7 @@ Tags: google reviews, instagram, facebook, youtube, google maps
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 0.5.0
+Stable tag: 0.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,10 @@ A `weblock-widgets` plugin a Weblock Group saját, agency-tulajdonú megoldása 
 4. Használd a shortcode-okat vagy a Gutenberg blokkokat
 
 == Changelog ==
+
+= 0.6.0 =
+* ÚJ: Twitter / X Feed widget (no API) — felhasználónév-alapú timeline, hivatalos Twitter widgets.js
+* ÚJ: Pinterest Feed widget (no API) — profil, board vagy egy pin beágyazása
 
 = 0.5.0 =
 * ÚJ: TikTok Feed widget (no API) — TikTok videók beágyazása URL-lista alapján, hivatalos TikTok embed.js-szel

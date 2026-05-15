@@ -238,6 +238,14 @@
 .wlw-instagram__embed-item { min-width: 0; }
 .wlw-instagram__embed-item .instagram-media { margin: 0 !important; max-width: 100% !important; min-width: 0 !important; width: 100% !important; }
 
+/* ===== Twitter / X embed ===== */
+.wlw-twitter--embed { width: 100%; }
+.wlw-twitter--embed .twitter-timeline { max-width: 100% !important; }
+
+/* ===== Pinterest embed ===== */
+.wlw-pinterest--embed { width: 100%; display: flex; justify-content: center; }
+.wlw-pinterest--embed span[data-pin-id], .wlw-pinterest--embed > a { max-width: 100% !important; }
+
 /* ===== TikTok embed (no-API) ===== */
 .wlw-tiktok--embed { width: 100%; }
 .wlw-tiktok__grid {

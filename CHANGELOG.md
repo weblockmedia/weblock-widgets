@@ -2,6 +2,21 @@
 
 A formátum [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) szerint, verziózás [Semantic Versioning](https://semver.org/lang/hu/).
 
+## [0.6.0] — 2026-05-15
+
+### Hozzáadva
+- **Twitter / X Feed widget** (`[wlw_twitter_feed]`) — no-API
+  - Field-ek: `username` (kötelező, @ nélkül), `height`, `theme` (light/dark)
+  - Hivatalos `platform.twitter.com/widgets.js` használata
+- **Pinterest Feed widget** (`[wlw_pinterest_feed]`) — no-API
+  - Field-ek: `url`, `type` (embedUser / embedBoard / embedPin), `width`, `height`
+  - Hivatalos `assets.pinterest.com/js/pinit.js` használata
+- Gutenberg block-ok mindkét új widgethez
+- CSS: reszponzív iframe stílus
+
+### Megjegyzés
+- Google Business Feed eltolva v0.9.0-ra (Review platforms csoportba), mert a Google My Business posts API nem nyilvános, és a Manual Posts megoldás ott logikus
+
 ## [0.5.0] — 2026-05-15
 
 ### Hozzáadva
