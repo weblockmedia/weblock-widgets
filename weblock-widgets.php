@@ -3,7 +3,7 @@
  * Plugin Name: Weblock Widgets
  * Plugin URI: https://github.com/weblockmedia/weblock-widgets
  * Description: Google Reviews, Instagram, Facebook, YouTube és Google Maps widgetek egy pluginban — Trustindex és Elfsight kiváltása.
- * Version: 0.7.0
+ * Version: 0.8.0
  * Author: Weblock Group
  * Author URI: https://weblockgroup.com
  * License: GPL-2.0-or-later
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'WLW_VERSION', '0.7.0' );
+define( 'WLW_VERSION', '0.8.0' );
 define( 'WLW_FILE', __FILE__ );
 define( 'WLW_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WLW_URL', plugin_dir_url( __FILE__ ) );

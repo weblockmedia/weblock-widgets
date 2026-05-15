@@ -406,6 +406,15 @@
     font-family: ui-monospace, "SF Mono", Menlo, monospace;
     font-size: 0.9rem;
 }
+.wlw-shortcode__input--html {
+    background: #f8f9fa;
+    min-height: 100px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    resize: vertical;
+    white-space: pre;
+    overflow: auto;
+}
 .wlw-shortcode__row .button {
     display: inline-flex; align-items: center; gap: 0.35rem;
     min-height: 44px;

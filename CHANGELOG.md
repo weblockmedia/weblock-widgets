@@ -2,6 +2,22 @@
 
 A formátum [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) szerint, verziózás [Semantic Versioning](https://semver.org/lang/hu/).
 
+## [0.8.0] — 2026-05-15
+
+### Hozzáadva
+- **E-mail aláírás widget** (`[wlw_email_signature]`) — Trustindex Email Signatures parity
+  - 3 sablon: `text` (szöveges), `image` (profilképpel), `logo` (saját logóval)
+  - Mezők: név, beosztás, cég, telefon, e-mail, weboldal, avatar URL, logo URL, accent szín
+  - Google csillag rating (0-5) + értékelések száma + Google Reviews link
+  - Inline-CSS táblázat-alapú HTML (Gmail / Outlook / Mailchimp kompatibilis)
+  - Egy-kattintásos HTML másolás a vágólapra
+- **Új meta-flag**: `output_type` (`shortcode` | `html`) az `AbstractWidget::get_meta()`-ban
+  - Ha `html`, a copy gomb a renderelt HTML-t másolja (nem a shortcode-ot)
+  - Eredmény-mező textarea-ra vált (4 sor, monospace, white-space: pre)
+
+### Változott
+- Admin Configurator: az "Eredmény" szekció dinamikus címke + textarea ha `output_type=html`
+
 ## [0.7.0] — 2026-05-15
 
 ### Hozzáadva

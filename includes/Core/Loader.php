@@ -32,6 +32,7 @@ class Loader {
         \WeblockWidgets\Widgets\Social\PinterestFeed::instance()->init();
         \WeblockWidgets\Widgets\Tools\GoogleMaps::instance()->init();
         \WeblockWidgets\Widgets\Trust\TrustmarkBadge::instance()->init();
+        \WeblockWidgets\Widgets\Trust\EmailSignature::instance()->init();
 
         add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
     }

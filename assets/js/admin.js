@@ -58,11 +58,15 @@
         var codeInput = document.querySelector('[data-wlw-code]');
         if (!target || !codeInput) return;
 
+        var outputMode = form.getAttribute('data-output') || 'shortcode';
         var result = buildShortcode(form);
-        codeInput.value = result.shortcode;
+        if (outputMode !== 'html') {
+            codeInput.value = result.shortcode;
+        }
 
         if (result.missingRequired) {
             target.innerHTML = '<p class="wlw-preview__hint">' + (cfg.i18n.missingReq || 'Töltsd ki a kötelező mezőket.') + '</p>';
+            if (outputMode === 'html') { codeInput.value = ''; }
             return;
         }
 
@@ -79,7 +83,11 @@
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
                     if (data && data.success && data.data && typeof data.data.html === 'string') {
-                        target.innerHTML = data.data.html || '<p class="wlw-preview__hint">' + (cfg.i18n.previewErr || 'Üres válasz.') + '</p>';
+                        var html = data.data.html || '';
+                        target.innerHTML = html || '<p class="wlw-preview__hint">' + (cfg.i18n.previewErr || 'Üres válasz.') + '</p>';
+                        if (outputMode === 'html') {
+                            codeInput.value = html.trim();
+                        }
                     } else {
                         target.innerHTML = '<p class="wlw-preview__hint wlw-preview__hint--err">' + (cfg.i18n.previewErr || 'Hiba.') + '</p>';
                     }

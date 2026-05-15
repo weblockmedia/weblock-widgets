@@ -4,7 +4,7 @@ Tags: google reviews, instagram, facebook, youtube, google maps
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 0.7.0
+Stable tag: 0.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,12 @@ A `weblock-widgets` plugin a Weblock Group saját, agency-tulajdonú megoldása 
 4. Használd a shortcode-okat vagy a Gutenberg blokkokat
 
 == Changelog ==
+
+= 0.8.0 =
+* ÚJ: E-mail aláírás generátor — 3 sablon (szöveges, profilképpel, saját logóval)
+* Google csillag rating + értékelések száma + link az aláírásban
+* HTML output (másolható Gmail / Outlook / Mailchimp aláírásba)
+* Új meta-flag: output_type (shortcode|html) — copy gomb a HTML-t másolja shortcode helyett
 
 = 0.7.0 =
 * ÚJ: Trustmark Badge widget — 11 trust badge (SSL, biztonságos fizetés, spammentes, ingyenes szállítás, 30 napos pénzvisszafizetés, stb.)

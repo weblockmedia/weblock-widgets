@@ -31,6 +31,7 @@ abstract class AbstractWidget {
             'icon'        => 'screenoptions',
             'color'       => '#1a73e8',
             'category'    => 'tools',
+            'output_type' => 'shortcode',
             'description' => '',
             'fields'      => [],
         ];

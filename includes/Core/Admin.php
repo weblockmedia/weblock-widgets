@@ -178,6 +178,7 @@ class Admin {
             \WeblockWidgets\Widgets\Social\YoutubeGallery::instance()->get_meta(),
             \WeblockWidgets\Widgets\Tools\GoogleMaps::instance()->get_meta(),
             \WeblockWidgets\Widgets\Trust\TrustmarkBadge::instance()->get_meta(),
+            \WeblockWidgets\Widgets\Trust\EmailSignature::instance()->get_meta(),
         ];
         return $this->widgets_cache;
     }
@@ -319,6 +320,7 @@ class Admin {
     private function render_configurator( $widget ) {
         $back = add_query_arg( [ 'page' => 'weblock-widgets' ], admin_url( 'admin.php' ) );
         $api_ok = $this->widget_api_status( $widget['id'] );
+        $output_type = $widget['output_type'] ?? 'shortcode';
         ?>
         <a class="wlw-back" href="<?php echo esc_url( $back ); ?>">
             <span class="dashicons dashicons-arrow-left-alt"></span>
@@ -346,7 +348,7 @@ class Admin {
             <div class="wlw-configurator__body">
                 <div class="wlw-configurator__form">
                     <h3><?php esc_html_e( 'Paraméterek', 'weblock-widgets' ); ?></h3>
-                    <form data-wlw-form data-shortcode="<?php echo esc_attr( $widget['id'] ); ?>">
+                    <form data-wlw-form data-shortcode="<?php echo esc_attr( $widget['id'] ); ?>" data-output="<?php echo esc_attr( $output_type ); ?>">
                         <?php foreach ( $widget['fields'] as $field ) : ?>
                             <?php $this->render_field( $field ); ?>
                         <?php endforeach; ?>
@@ -357,9 +359,19 @@ class Admin {
                     <h3><?php esc_html_e( 'Eredmény', 'weblock-widgets' ); ?></h3>
 
                     <div class="wlw-shortcode">
-                        <label class="wlw-shortcode__label"><?php esc_html_e( 'Shortcode (másold be bárhova)', 'weblock-widgets' ); ?></label>
+                        <label class="wlw-shortcode__label">
+                            <?php if ( 'html' === $output_type ) : ?>
+                                <?php esc_html_e( 'HTML kód (másold a Gmail / Outlook aláírásba)', 'weblock-widgets' ); ?>
+                            <?php else : ?>
+                                <?php esc_html_e( 'Shortcode (másold be bárhova)', 'weblock-widgets' ); ?>
+                            <?php endif; ?>
+                        </label>
                         <div class="wlw-shortcode__row">
-                            <input type="text" data-wlw-code readonly value="" class="wlw-shortcode__input" />
+                            <?php if ( 'html' === $output_type ) : ?>
+                                <textarea data-wlw-code readonly rows="4" class="wlw-shortcode__input wlw-shortcode__input--html"></textarea>
+                            <?php else : ?>
+                                <input type="text" data-wlw-code readonly value="" class="wlw-shortcode__input" />
+                            <?php endif; ?>
                             <button type="button" class="button button-primary" data-wlw-copy>
                                 <span class="dashicons dashicons-clipboard"></span>
                                 <?php esc_html_e( 'Másolás', 'weblock-widgets' ); ?>
