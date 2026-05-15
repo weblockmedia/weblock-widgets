@@ -420,7 +420,29 @@
     min-height: 44px;
 }
 .wlw-shortcode__row .button .dashicons { font-size: 16px; width: 16px; height: 16px; }
-.wlw-shortcode__row .button.is-copied { background: var(--wlw-success); border-color: var(--wlw-success); }
+.wlw-shortcode__row .button.is-copied { background: var(--wlw-success); border-color: var(--wlw-success); color: #fff; }
+
+.wlw-shortcode__row--rich {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--wlw-border);
+    align-items: flex-start;
+}
+.wlw-shortcode__hint {
+    margin: 0;
+    color: var(--wlw-muted);
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.wlw-shortcode__hint .dashicons {
+    font-size: 16px; width: 16px; height: 16px;
+    color: var(--wlw-primary);
+}
 
 /* ===== Preview ===== */
 .wlw-preview {

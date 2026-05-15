@@ -2,6 +2,20 @@
 
 A formátum [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) szerint, verziózás [Semantic Versioning](https://semver.org/lang/hu/).
 
+## [0.8.1] — 2026-05-15
+
+### Hozzáadva
+- **"Renderelt aláírás másolása" gomb** (`html` output_type widgetekhez, pl. E-mail aláírás)
+  - **Spark, Apple Mail, Outlook desktop, Outlook web** kompatibilis — rich-text + HTML együtt a vágólapon
+  - Modern Clipboard API (ClipboardItem) → fallback contentEditable + execCommand
+  - A renderelt preview tartalmát másolja, nem a forrás HTML-t
+- Bővített útmutató (`<details>` szekció): konkrét beillesztési lépések kliensenként
+  - Spark (Mac/iOS), Apple Mail, Outlook desktop, Gmail web, Mailchimp, Outlook web
+
+### Változott
+- HTML output widgetnél a copy gomb cimkéje "Másolás" → "HTML másolása"
+- Hozzáadott `.is-copied` állapot szín-fix (fehér szöveg zöld háttéren)
+
 ## [0.8.0] — 2026-05-15
 
 ### Hozzáadva

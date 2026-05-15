@@ -4,7 +4,7 @@ Tags: google reviews, instagram, facebook, youtube, google maps
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 0.8.0
+Stable tag: 0.8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,11 @@ A `weblock-widgets` plugin a Weblock Group saját, agency-tulajdonú megoldása 
 4. Használd a shortcode-okat vagy a Gutenberg blokkokat
 
 == Changelog ==
+
+= 0.8.1 =
+* ÚJ: "Renderelt aláírás másolása" gomb (Spark, Apple Mail, Outlook desktop kompatibilis)
+* Clipboard API: rich-text + HTML egyszerre kerül a vágólapra
+* Bővített útmutató konkrét beillesztési lépésekkel kliensenként
 
 = 0.8.0 =
 * ÚJ: E-mail aláírás generátor — 3 sablon (szöveges, profilképpel, saját logóval)

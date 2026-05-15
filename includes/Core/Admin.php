@@ -361,7 +361,7 @@ class Admin {
                     <div class="wlw-shortcode">
                         <label class="wlw-shortcode__label">
                             <?php if ( 'html' === $output_type ) : ?>
-                                <?php esc_html_e( 'HTML kód (másold a Gmail / Outlook aláírásba)', 'weblock-widgets' ); ?>
+                                <?php esc_html_e( 'HTML kód (Gmail / Outlook web / Mailchimp)', 'weblock-widgets' ); ?>
                             <?php else : ?>
                                 <?php esc_html_e( 'Shortcode (másold be bárhova)', 'weblock-widgets' ); ?>
                             <?php endif; ?>
@@ -374,9 +374,24 @@ class Admin {
                             <?php endif; ?>
                             <button type="button" class="button button-primary" data-wlw-copy>
                                 <span class="dashicons dashicons-clipboard"></span>
-                                <?php esc_html_e( 'Másolás', 'weblock-widgets' ); ?>
+                                <?php echo 'html' === $output_type
+                                    ? esc_html__( 'HTML másolása', 'weblock-widgets' )
+                                    : esc_html__( 'Másolás', 'weblock-widgets' ); ?>
                             </button>
                         </div>
+
+                        <?php if ( 'html' === $output_type ) : ?>
+                            <div class="wlw-shortcode__row wlw-shortcode__row--rich">
+                                <p class="wlw-shortcode__hint">
+                                    <span class="dashicons dashicons-info-outline"></span>
+                                    <?php esc_html_e( 'Spark, Apple Mail, Outlook desktop kliensekhez:', 'weblock-widgets' ); ?>
+                                </p>
+                                <button type="button" class="button button-secondary" data-wlw-copy-rich>
+                                    <span class="dashicons dashicons-format-aside"></span>
+                                    <?php esc_html_e( 'Renderelt aláírás másolása', 'weblock-widgets' ); ?>
+                                </button>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                     <div class="wlw-preview">
@@ -393,14 +408,29 @@ class Admin {
                     </div>
 
                     <details class="wlw-tip">
-                        <summary><?php esc_html_e( 'Hogyan használd a shortcode-ot?', 'weblock-widgets' ); ?></summary>
-                        <ul>
-                            <li><strong>Gutenberg:</strong> <?php esc_html_e( 'Add Block → keresd "Shortcode" → paszt-old be.', 'weblock-widgets' ); ?></li>
-                            <li><strong>Klasszikus editor:</strong> <?php esc_html_e( 'paszt-old be közvetlenül a szövegbe.', 'weblock-widgets' ); ?></li>
-                            <li><strong>Bricks Builder:</strong> <?php esc_html_e( 'Add a "Shortcode" element → paszt-old be.', 'weblock-widgets' ); ?></li>
-                            <li><strong>Elementor:</strong> <?php esc_html_e( 'Add a "Shortcode" widget → paszt-old be.', 'weblock-widgets' ); ?></li>
-                            <li><strong>PHP template-ben:</strong> <code>&lt;?php echo do_shortcode( '...' ); ?&gt;</code></li>
-                        </ul>
+                        <summary><?php
+                            echo 'html' === $output_type
+                                ? esc_html__( 'Hogyan használd az aláírást a különböző email kliensekben?', 'weblock-widgets' )
+                                : esc_html__( 'Hogyan használd a shortcode-ot?', 'weblock-widgets' );
+                        ?></summary>
+                        <?php if ( 'html' === $output_type ) : ?>
+                            <ul>
+                                <li><strong>Spark (Mac/iOS):</strong> <?php esc_html_e( 'Settings → Personalization → Signatures → New Signature → klikk a "Renderelt aláírás másolása" gombra → Cmd+V a szerkesztőbe.', 'weblock-widgets' ); ?></li>
+                                <li><strong>Apple Mail (Mac):</strong> <?php esc_html_e( 'Mail → Settings → Signatures → "+" → "Renderelt aláírás másolása" → Cmd+V. Vedd ki a "Always match my default message font" pipát.', 'weblock-widgets' ); ?></li>
+                                <li><strong>Outlook desktop (Mac/Windows):</strong> <?php esc_html_e( 'Outlook → Preferences → Signatures → "+" → "Renderelt aláírás másolása" → Cmd+V (vagy Ctrl+V).', 'weblock-widgets' ); ?></li>
+                                <li><strong>Gmail (web):</strong> <?php esc_html_e( 'Gmail Settings → General → Signature → új signature → "Renderelt aláírás másolása" → Cmd+V (vagy a "HTML másolása" gomb is működik a forrásnézet engedélyezésével).', 'weblock-widgets' ); ?></li>
+                                <li><strong>Mailchimp / Active Campaign:</strong> <?php esc_html_e( 'A HTML kód mezőbe (forráskód nézet) másold a "HTML másolása" gombbal kapott kódot.', 'weblock-widgets' ); ?></li>
+                                <li><strong>Outlook web:</strong> <?php esc_html_e( '"Renderelt aláírás másolása" → Settings → Mail → Compose and reply → Signature.', 'weblock-widgets' ); ?></li>
+                            </ul>
+                        <?php else : ?>
+                            <ul>
+                                <li><strong>Gutenberg:</strong> <?php esc_html_e( 'Add Block → keresd "Shortcode" → paszt-old be.', 'weblock-widgets' ); ?></li>
+                                <li><strong>Klasszikus editor:</strong> <?php esc_html_e( 'paszt-old be közvetlenül a szövegbe.', 'weblock-widgets' ); ?></li>
+                                <li><strong>Bricks Builder:</strong> <?php esc_html_e( 'Add a "Shortcode" element → paszt-old be.', 'weblock-widgets' ); ?></li>
+                                <li><strong>Elementor:</strong> <?php esc_html_e( 'Add a "Shortcode" widget → paszt-old be.', 'weblock-widgets' ); ?></li>
+                                <li><strong>PHP template-ben:</strong> <code>&lt;?php echo do_shortcode( '...' ); ?&gt;</code></li>
+                            </ul>
+                        <?php endif; ?>
                     </details>
                 </div>
             </div>

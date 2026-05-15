@@ -98,23 +98,17 @@
         }, force ? 0 : 600);
     }
 
+    function flashCopied(button) {
+        var original = button.innerHTML;
+        button.innerHTML = '<span class="dashicons dashicons-yes"></span> ' + (cfg.i18n.copied || 'Másolva!');
+        button.classList.add('is-copied');
+        setTimeout(function () {
+            button.innerHTML = original;
+            button.classList.remove('is-copied');
+        }, 1800);
+    }
+
     function copyToClipboard(text, button) {
-        var done = function () {
-            var original = button.innerHTML;
-            button.innerHTML = '<span class="dashicons dashicons-yes"></span> ' + (cfg.i18n.copied || 'Másolva!');
-            button.classList.add('is-copied');
-            setTimeout(function () {
-                button.innerHTML = original;
-                button.classList.remove('is-copied');
-            }, 1800);
-        };
-
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(text).then(done, function () { fallback(); });
-        } else {
-            fallback();
-        }
-
         function fallback() {
             var ta = document.createElement('textarea');
             ta.value = text;
@@ -124,8 +118,65 @@
             ta.select();
             try { document.execCommand('copy'); } catch (e) {}
             document.body.removeChild(ta);
-            done();
+            flashCopied(button);
         }
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(function () { flashCopied(button); }, fallback);
+        } else {
+            fallback();
+        }
+    }
+
+    function copyRichHtml(html, button) {
+        // Plain text fallback: strip tags
+        var tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        var plain = (tmp.innerText || tmp.textContent || '').replace(/\n{3,}/g, '\n\n').trim();
+
+        function legacyFallback() {
+            // contentEditable div + selection + execCommand('copy')
+            var div = document.createElement('div');
+            div.contentEditable = 'true';
+            div.innerHTML = html;
+            div.style.position = 'fixed';
+            div.style.left = '-9999px';
+            div.style.top = '0';
+            div.style.opacity = '0';
+            document.body.appendChild(div);
+
+            var range = document.createRange();
+            range.selectNodeContents(div);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+
+            var ok = false;
+            try { ok = document.execCommand('copy'); } catch (e) {}
+            sel.removeAllRanges();
+            document.body.removeChild(div);
+
+            if (ok) { flashCopied(button); }
+            else    { copyToClipboard(plain, button); }
+        }
+
+        if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write && window.isSecureContext) {
+            try {
+                var item = new ClipboardItem({
+                    'text/html':  new Blob([ html  ], { type: 'text/html'  }),
+                    'text/plain': new Blob([ plain ], { type: 'text/plain' })
+                });
+                navigator.clipboard.write([ item ]).then(
+                    function () { flashCopied(button); },
+                    legacyFallback
+                );
+                return;
+            } catch (e) {
+                legacyFallback();
+                return;
+            }
+        }
+        legacyFallback();
     }
 
     function initPlaceSearch(container, form) {
@@ -248,6 +299,18 @@
             copyBtn.addEventListener('click', function () {
                 if (!codeInput.value) return;
                 copyToClipboard(codeInput.value, copyBtn);
+            });
+        }
+
+        var copyRichBtn = document.querySelector('[data-wlw-copy-rich]');
+        var previewEl   = document.querySelector('[data-wlw-preview]');
+        if (copyRichBtn && previewEl) {
+            copyRichBtn.addEventListener('click', function () {
+                var html = previewEl.innerHTML.trim();
+                if (!html || previewEl.querySelector('.wlw-preview__hint')) {
+                    return;
+                }
+                copyRichHtml(html, copyRichBtn);
             });
         }
 
