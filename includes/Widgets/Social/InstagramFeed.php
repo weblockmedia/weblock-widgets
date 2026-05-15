@@ -1,7 +1,6 @@
 <?php
 namespace WeblockWidgets\Widgets\Social;
 
-use WeblockWidgets\Core\ApiCache;
 use WeblockWidgets\Widgets\AbstractWidget;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,31 +25,34 @@ class InstagramFeed extends AbstractWidget {
             'label'       => __( 'Instagram Feed', 'weblock-widgets' ),
             'icon'        => 'instagram',
             'color'       => '#E1306C',
-            'description' => __( 'Legutóbbi Instagram posztok az oldal Instagram fiókjából.', 'weblock-widgets' ),
+            'description' => __( 'Konkrét Instagram posztok beágyazva (nem kell API kulcs).', 'weblock-widgets' ),
+            'requires_api'=> false,
             'fields'      => [
                 [
-                    'name'    => 'count',
-                    'label'   => __( 'Posztok száma', 'weblock-widgets' ),
-                    'type'    => 'number',
-                    'default' => 9,
-                    'min'     => 1,
-                    'max'     => 25,
+                    'name'        => 'post_urls',
+                    'label'       => __( 'Instagram poszt URL-ek', 'weblock-widgets' ),
+                    'type'        => 'textarea',
+                    'required'    => true,
+                    'placeholder' => "https://www.instagram.com/p/Cabc123/\nhttps://www.instagram.com/p/Cdef456/",
+                    'help'        => __( 'Soronként 1 URL. Mindegyik Instagram poszt vagy reel publikus URL-je.', 'weblock-widgets' ),
                 ],
                 [
-                    'name'    => 'layout',
-                    'label'   => __( 'Elrendezés', 'weblock-widgets' ),
+                    'name'    => 'columns',
+                    'label'   => __( 'Oszlopok száma (desktop)', 'weblock-widgets' ),
                     'type'    => 'select',
-                    'default' => 'grid',
+                    'default' => '3',
                     'options' => [
-                        'grid'   => __( 'Rács', 'weblock-widgets' ),
-                        'slider' => __( 'Karusszel', 'weblock-widgets' ),
+                        '1' => __( '1 oszlop', 'weblock-widgets' ),
+                        '2' => __( '2 oszlop', 'weblock-widgets' ),
+                        '3' => __( '3 oszlop', 'weblock-widgets' ),
+                        '4' => __( '4 oszlop', 'weblock-widgets' ),
                     ],
                 ],
                 [
                     'name'    => 'show_caption',
-                    'label'   => __( 'Felirat hover-en mutatva', 'weblock-widgets' ),
+                    'label'   => __( 'Felirat megjelenítése', 'weblock-widgets' ),
                     'type'    => 'toggle',
-                    'default' => 'no',
+                    'default' => 'yes',
                 ],
             ],
         ];
@@ -58,34 +60,22 @@ class InstagramFeed extends AbstractWidget {
 
     public function render_shortcode( $atts ) {
         $atts = shortcode_atts( [
-            'count'  => 9,
-            'layout' => 'grid',
-            'show_caption' => 'no',
+            'post_urls'    => '',
+            'columns'      => '3',
+            'show_caption' => 'yes',
         ], $atts, $this->shortcode );
 
-        $token = $this->get_setting( 'instagram_token' );
-        if ( ! $token ) {
-            return $this->error_message( __( 'Instagram token nincs beállítva.', 'weblock-widgets' ) );
+        $urls = array_filter( array_map( 'trim', preg_split( '/[\r\n,]+/', $atts['post_urls'] ) ) );
+        $urls = array_filter( $urls, function ( $u ) {
+            return preg_match( '#^https?://(www\.)?instagram\.com/(p|reel|tv)/[^/\s]+#i', $u );
+        } );
+        if ( empty( $urls ) ) {
+            return $this->error_message( __( 'Adj meg legalább egy érvényes Instagram poszt URL-t.', 'weblock-widgets' ) );
         }
 
-        $url = add_query_arg( [
-            'fields'       => 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp',
-            'access_token' => $token,
-            'limit'        => max( 1, min( 25, (int) $atts['count'] ) ),
-        ], 'https://graph.instagram.com/me/media' );
-
-        $data = ApiCache::instance()->fetch( $url );
-        if ( is_wp_error( $data ) ) {
-            return $this->error_message( __( 'Instagram API hiba: ', 'weblock-widgets' ) . $data->get_error_message() );
-        }
-
-        $items = isset( $data['data'] ) && is_array( $data['data'] ) ? $data['data'] : [];
-        $items = array_slice( $items, 0, max( 1, (int) $atts['count'] ) );
-
-        $layout = in_array( $atts['layout'], [ 'grid', 'slider' ], true ) ? $atts['layout'] : 'grid';
-
-        return $this->load_template( "social/instagram-{$layout}.php", [
-            'items'        => $items,
+        return $this->load_template( 'social/instagram-embed.php', [
+            'urls'         => array_values( $urls ),
+            'columns'      => max( 1, min( 4, (int) $atts['columns'] ) ),
             'show_caption' => 'yes' === $atts['show_caption'],
         ] );
     }
@@ -99,15 +89,15 @@ class InstagramFeed extends AbstractWidget {
             'icon'            => 'instagram',
             'render_callback' => function ( $attrs ) {
                 return $this->render_shortcode( [
-                    'count'        => $attrs['count']  ?? 9,
-                    'layout'       => $attrs['layout'] ?? 'grid',
+                    'post_urls'    => $attrs['postUrls']    ?? '',
+                    'columns'      => $attrs['columns']     ?? '3',
                     'show_caption' => ! empty( $attrs['showCaption'] ) ? 'yes' : 'no',
                 ] );
             },
             'attributes' => [
-                'count'       => [ 'type' => 'number',  'default' => 9 ],
-                'layout'      => [ 'type' => 'string',  'default' => 'grid' ],
-                'showCaption' => [ 'type' => 'boolean', 'default' => false ],
+                'postUrls'    => [ 'type' => 'string',  'default' => '' ],
+                'columns'     => [ 'type' => 'string',  'default' => '3' ],
+                'showCaption' => [ 'type' => 'boolean', 'default' => true ],
             ],
         ] );
     }

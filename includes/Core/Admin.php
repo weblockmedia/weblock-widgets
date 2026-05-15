@@ -116,12 +116,8 @@ class Admin {
 
     public function sanitize( $input ) {
         $out = [];
-        $out['google_api_key']  = isset( $input['google_api_key'] )  ? sanitize_text_field( $input['google_api_key'] )  : '';
-        $out['instagram_token'] = isset( $input['instagram_token'] ) ? sanitize_text_field( $input['instagram_token'] ) : '';
-        $out['facebook_token']  = isset( $input['facebook_token'] )  ? sanitize_text_field( $input['facebook_token'] )  : '';
-        $out['facebook_page_id']= isset( $input['facebook_page_id'] )? sanitize_text_field( $input['facebook_page_id'] )  : '';
-        $out['youtube_api_key'] = isset( $input['youtube_api_key'] ) ? sanitize_text_field( $input['youtube_api_key'] ) : '';
-        $out['cache_ttl']       = isset( $input['cache_ttl'] ) ? max( 1, min( 168, (int) $input['cache_ttl'] ) ) : 24;
+        $out['google_api_key'] = isset( $input['google_api_key'] ) ? sanitize_text_field( $input['google_api_key'] ) : '';
+        $out['cache_ttl']      = isset( $input['cache_ttl'] ) ? max( 1, min( 168, (int) $input['cache_ttl'] ) ) : 24;
         return $out;
     }
 
@@ -182,25 +178,16 @@ class Admin {
         return $this->widgets_cache;
     }
 
-    private function api_keys_status() {
-        $s = get_option( 'wlw_settings', [] );
-        return [
-            'google'   => ! empty( $s['google_api_key'] ),
-            'ig'       => ! empty( $s['instagram_token'] ),
-            'fb'       => ! empty( $s['facebook_token'] ) && ! empty( $s['facebook_page_id'] ),
-            'youtube'  => ! empty( $s['youtube_api_key'] ) || ! empty( $s['google_api_key'] ),
-            'maps'     => ! empty( $s['google_api_key'] ),
-        ];
-    }
-
     private function widget_api_status( $widget_id ) {
-        $s = $this->api_keys_status();
-        switch ( $widget_id ) {
-            case 'wlw_google_reviews':  return $s['google'];
-            case 'wlw_instagram_feed':  return $s['ig'];
-            case 'wlw_facebook_feed':   return $s['fb'];
-            case 'wlw_youtube_gallery': return $s['youtube'];
-            case 'wlw_google_map':      return $s['maps'];
+        $widgets = $this->get_all_widgets();
+        foreach ( $widgets as $w ) {
+            if ( $w['id'] === $widget_id ) {
+                if ( empty( $w['requires_api'] ) ) {
+                    return true;
+                }
+                $settings = get_option( 'wlw_settings', [] );
+                return ! empty( $settings['google_api_key'] );
+            }
         }
         return false;
     }
@@ -234,7 +221,8 @@ class Admin {
 
         <div class="wlw-gallery">
             <?php foreach ( $widgets as $w ) :
-                $ready = $this->widget_api_status( $w['id'] );
+                $needs_api = ! empty( $w['requires_api'] );
+                $ready     = $this->widget_api_status( $w['id'] );
                 $url = add_query_arg( [
                     'page'   => 'weblock-widgets',
                     'widget' => $w['id'],
@@ -247,9 +235,12 @@ class Admin {
                         <span class="wlw-card__desc"><?php echo esc_html( $w['description'] ); ?></span>
                     </span>
                     <span class="wlw-card__status <?php echo $ready ? 'is-ready' : 'is-missing'; ?>">
-                        <?php if ( $ready ) : ?>
+                        <?php if ( ! $needs_api ) : ?>
                             <span class="dashicons dashicons-yes-alt" aria-hidden="true"></span>
-                            <?php esc_html_e( 'Beállítva', 'weblock-widgets' ); ?>
+                            <?php esc_html_e( 'Nem kell API kulcs', 'weblock-widgets' ); ?>
+                        <?php elseif ( $ready ) : ?>
+                            <span class="dashicons dashicons-yes-alt" aria-hidden="true"></span>
+                            <?php esc_html_e( 'API kulcs OK', 'weblock-widgets' ); ?>
                         <?php else : ?>
                             <span class="dashicons dashicons-warning" aria-hidden="true"></span>
                             <?php esc_html_e( 'API kulcs kell', 'weblock-widgets' ); ?>
@@ -420,6 +411,17 @@ class Admin {
                     </span>
                 </label>
 
+            <?php elseif ( 'textarea' === $type ) : ?>
+                <textarea
+                    id="<?php echo esc_attr( $id ); ?>"
+                    name="<?php echo esc_attr( $name ); ?>"
+                    placeholder="<?php echo esc_attr( $placeholder ); ?>"
+                    rows="5"
+                    data-wlw-input
+                    data-default=""
+                    <?php echo $required ? 'required' : ''; ?>
+                    class="large-text code"><?php echo esc_textarea( $default ); ?></textarea>
+
             <?php elseif ( 'number' === $type ) : ?>
                 <input
                     type="number"
@@ -457,12 +459,8 @@ class Admin {
 
     public function render_settings_page() {
         $settings = wp_parse_args( get_option( 'wlw_settings', [] ), [
-            'google_api_key'  => '',
-            'instagram_token' => '',
-            'facebook_token'  => '',
-            'facebook_page_id'=> '',
-            'youtube_api_key' => '',
-            'cache_ttl'       => 24,
+            'google_api_key' => '',
+            'cache_ttl'      => 24,
         ] );
         $flushed = ! empty( $_GET['flushed'] );
         ?>
@@ -476,47 +474,27 @@ class Admin {
                 <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Cache törölve.', 'weblock-widgets' ); ?></p></div>
             <?php endif; ?>
 
+            <div class="notice notice-info">
+                <p>
+                    <strong><?php esc_html_e( '4 widget API kulcs nélkül működik:', 'weblock-widgets' ); ?></strong>
+                    <?php esc_html_e( 'Instagram Feed, Facebook Feed, YouTube Gallery, Google Map.', 'weblock-widgets' ); ?>
+                    <?php esc_html_e( 'Csak a Google Reviews igényel Google API kulcsot — a Google ezt ingyenesen adja ($200 credit/hó, 12 oldal terhelése ~$5/hó).', 'weblock-widgets' ); ?>
+                </p>
+            </div>
+
             <form method="post" action="options.php" class="wlw-settings-form">
                 <?php settings_fields( 'wlw_settings_group' ); ?>
 
                 <div class="wlw-settings-section">
-                    <h2><span class="dashicons dashicons-google"></span> <?php esc_html_e( 'Google', 'weblock-widgets' ); ?></h2>
-                    <p class="description"><?php esc_html_e( 'Egyetlen Google API kulcs elég a Reviews + Maps + YouTube funkciókhoz. Google Cloud Console-ban hozd létre, és engedélyezd: Places API, Maps Embed API, YouTube Data API v3.', 'weblock-widgets' ); ?></p>
+                    <h2><span class="dashicons dashicons-star-filled"></span> <?php esc_html_e( 'Google API kulcs (csak a Reviews-hoz kell)', 'weblock-widgets' ); ?></h2>
+                    <p class="description">
+                        <?php esc_html_e( 'A Google Reviews widget működéséhez szükséges. Másnak NEM kell.', 'weblock-widgets' ); ?>
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=weblock-widgets-help' ) ); ?>"><?php esc_html_e( 'Hogyan szerzem be? →', 'weblock-widgets' ); ?></a>
+                    </p>
 
                     <label class="wlw-setting">
-                        <span class="wlw-setting__label"><?php esc_html_e( 'Google API kulcs', 'weblock-widgets' ); ?></span>
+                        <span class="wlw-setting__label"><?php esc_html_e( 'API kulcs', 'weblock-widgets' ); ?></span>
                         <input type="text" name="wlw_settings[google_api_key]" value="<?php echo esc_attr( $settings['google_api_key'] ); ?>" class="regular-text" autocomplete="off" placeholder="AIzaSy..." />
-                    </label>
-
-                    <label class="wlw-setting">
-                        <span class="wlw-setting__label"><?php esc_html_e( 'YouTube külön kulcs (opcionális)', 'weblock-widgets' ); ?></span>
-                        <input type="text" name="wlw_settings[youtube_api_key]" value="<?php echo esc_attr( $settings['youtube_api_key'] ); ?>" class="regular-text" autocomplete="off" />
-                        <span class="wlw-setting__help"><?php esc_html_e( 'Ha üres, a fenti Google kulcsot használja.', 'weblock-widgets' ); ?></span>
-                    </label>
-                </div>
-
-                <div class="wlw-settings-section">
-                    <h2><span class="dashicons dashicons-instagram"></span> <?php esc_html_e( 'Instagram', 'weblock-widgets' ); ?></h2>
-                    <p class="description"><?php esc_html_e( 'Long-lived user access token a Meta Developers App-ból (Instagram Graph API).', 'weblock-widgets' ); ?></p>
-
-                    <label class="wlw-setting">
-                        <span class="wlw-setting__label"><?php esc_html_e( 'Access Token', 'weblock-widgets' ); ?></span>
-                        <input type="text" name="wlw_settings[instagram_token]" value="<?php echo esc_attr( $settings['instagram_token'] ); ?>" class="regular-text" autocomplete="off" />
-                    </label>
-                </div>
-
-                <div class="wlw-settings-section">
-                    <h2><span class="dashicons dashicons-facebook"></span> <?php esc_html_e( 'Facebook', 'weblock-widgets' ); ?></h2>
-                    <p class="description"><?php esc_html_e( 'Facebook Page Access Token (long-lived) + a Page ID.', 'weblock-widgets' ); ?></p>
-
-                    <label class="wlw-setting">
-                        <span class="wlw-setting__label"><?php esc_html_e( 'Page Access Token', 'weblock-widgets' ); ?></span>
-                        <input type="text" name="wlw_settings[facebook_token]" value="<?php echo esc_attr( $settings['facebook_token'] ); ?>" class="regular-text" autocomplete="off" />
-                    </label>
-
-                    <label class="wlw-setting">
-                        <span class="wlw-setting__label"><?php esc_html_e( 'Page ID', 'weblock-widgets' ); ?></span>
-                        <input type="text" name="wlw_settings[facebook_page_id]" value="<?php echo esc_attr( $settings['facebook_page_id'] ); ?>" class="regular-text" autocomplete="off" />
                     </label>
                 </div>
 
@@ -525,7 +503,7 @@ class Admin {
                     <label class="wlw-setting">
                         <span class="wlw-setting__label"><?php esc_html_e( 'TTL (óra)', 'weblock-widgets' ); ?></span>
                         <input type="number" min="1" max="168" name="wlw_settings[cache_ttl]" value="<?php echo esc_attr( $settings['cache_ttl'] ); ?>" class="small-text" />
-                        <span class="wlw-setting__help"><?php esc_html_e( 'API válaszok cache-elési ideje. Ajánlott: 24 óra.', 'weblock-widgets' ); ?></span>
+                        <span class="wlw-setting__help"><?php esc_html_e( 'API válaszok és RSS feed-ek cache-elési ideje. Ajánlott: 24 óra.', 'weblock-widgets' ); ?></span>
                     </label>
                 </div>
 
@@ -539,7 +517,7 @@ class Admin {
                     <?php wp_nonce_field( 'wlw_flush_cache' ); ?>
                     <button type="submit" class="button button-secondary"><?php esc_html_e( 'Cache törlése', 'weblock-widgets' ); ?></button>
                 </form>
-                <p class="description"><?php esc_html_e( 'API válaszok azonnal újra letöltődnek a következő megjelenítéskor.', 'weblock-widgets' ); ?></p>
+                <p class="description"><?php esc_html_e( 'A feed-ek és API válaszok azonnal újra letöltődnek a következő megjelenítéskor.', 'weblock-widgets' ); ?></p>
             </div>
         </div>
         <?php
@@ -554,34 +532,44 @@ class Admin {
             </h1>
 
             <div class="wlw-help">
-                <h2><?php esc_html_e( 'API kulcsok beszerzése', 'weblock-widgets' ); ?></h2>
+                <h2><?php esc_html_e( 'Mit kell beállítani widgetenként', 'weblock-widgets' ); ?></h2>
 
-                <h3><?php esc_html_e( 'Google API (Reviews + Maps + YouTube)', 'weblock-widgets' ); ?></h3>
+                <table class="wlw-help-matrix">
+                    <thead>
+                        <tr>
+                            <th><?php esc_html_e( 'Widget', 'weblock-widgets' ); ?></th>
+                            <th><?php esc_html_e( 'API kulcs?', 'weblock-widgets' ); ?></th>
+                            <th><?php esc_html_e( 'Mit kell csak?', 'weblock-widgets' ); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><?php esc_html_e( 'YouTube Gallery', 'weblock-widgets' ); ?></td><td>❌</td><td>Channel ID vagy Playlist ID</td></tr>
+                        <tr><td><?php esc_html_e( 'Google Map', 'weblock-widgets' ); ?></td><td>❌</td><td>Cím (pl. "Budapest, Király u. 1.")</td></tr>
+                        <tr><td><?php esc_html_e( 'Facebook Feed', 'weblock-widgets' ); ?></td><td>❌</td><td>Facebook oldal URL</td></tr>
+                        <tr><td><?php esc_html_e( 'Instagram Feed', 'weblock-widgets' ); ?></td><td>❌</td><td>Instagram poszt URL-ek listája</td></tr>
+                        <tr><td><?php esc_html_e( 'Google Reviews', 'weblock-widgets' ); ?></td><td>✅</td><td>Google API kulcs (ingyenes) + Place ID</td></tr>
+                    </tbody>
+                </table>
+
+                <h2><?php esc_html_e( 'Google API kulcs beszerzése (csak Reviews-hoz)', 'weblock-widgets' ); ?></h2>
+                <p class="description"><?php esc_html_e( 'Ingyenes — a Google havi $200 credit-et ad. 12 oldalon ~$5/hó terhelés, tehát mindig 0 Ft.', 'weblock-widgets' ); ?></p>
                 <ol>
                     <li><?php printf( wp_kses_post( __( 'Nyisd meg: <a href="%s" target="_blank">Google Cloud Console</a>', 'weblock-widgets' ) ), 'https://console.cloud.google.com/' ); ?></li>
-                    <li><?php esc_html_e( 'Hozz létre projektet vagy válaszd ki a meglévőt.', 'weblock-widgets' ); ?></li>
-                    <li><?php esc_html_e( 'APIs & Services → Library → engedélyezd: Places API, Maps Embed API, YouTube Data API v3.', 'weblock-widgets' ); ?></li>
+                    <li><?php esc_html_e( 'Hozz létre projektet (vagy válaszd a meglévőt).', 'weblock-widgets' ); ?></li>
+                    <li><?php esc_html_e( 'APIs & Services → Library → engedélyezd: "Places API".', 'weblock-widgets' ); ?></li>
                     <li><?php esc_html_e( 'APIs & Services → Credentials → Create Credentials → API key.', 'weblock-widgets' ); ?></li>
-                    <li><?php esc_html_e( 'Application restrictions → HTTP referrers → add hozzá az oldalad domain-jét.', 'weblock-widgets' ); ?></li>
-                    <li><?php esc_html_e( 'Másold a kulcsot a Beállítások → Google szekcióba.', 'weblock-widgets' ); ?></li>
+                    <li><?php esc_html_e( 'Restrict: HTTP referrers → add az oldalad domain-jét (biztonsági okból).', 'weblock-widgets' ); ?></li>
+                    <li><?php esc_html_e( 'Másold a kulcsot a Beállítások oldalra.', 'weblock-widgets' ); ?></li>
                 </ol>
 
-                <h3><?php esc_html_e( 'Place ID megtalálása', 'weblock-widgets' ); ?></h3>
-                <p><?php printf( wp_kses_post( __( 'Használd a hivatalos finder eszközt: <a href="%s" target="_blank">Place ID Finder</a>', 'weblock-widgets' ) ), 'https://developers.google.com/maps/documentation/places/web-service/place-id' ); ?></p>
-
-                <h3><?php esc_html_e( 'Instagram Access Token', 'weblock-widgets' ); ?></h3>
-                <ol>
-                    <li><?php printf( wp_kses_post( __( '<a href="%s" target="_blank">Meta for Developers</a> → Create App → Business.', 'weblock-widgets' ) ), 'https://developers.facebook.com/' ); ?></li>
-                    <li><?php esc_html_e( 'Add Product → Instagram Graph API.', 'weblock-widgets' ); ?></li>
-                    <li><?php esc_html_e( 'Generate Token → kérd a long-lived user token-t.', 'weblock-widgets' ); ?></li>
-                </ol>
-
-                <h3><?php esc_html_e( 'Facebook Page Token', 'weblock-widgets' ); ?></h3>
-                <ol>
-                    <li><?php esc_html_e( 'Ugyanaz a Meta App, csak Facebook Login + Pages API.', 'weblock-widgets' ); ?></li>
-                    <li><?php esc_html_e( 'Graph API Explorer → válaszd a page-t → generálj page access token-t.', 'weblock-widgets' ); ?></li>
-                    <li><?php esc_html_e( 'Hosszítsd long-lived-re (debug_token endpoint).', 'weblock-widgets' ); ?></li>
-                </ol>
+                <h2><?php esc_html_e( 'Tipp: hol találom a Channel ID-t / Page URL-t / Post URL-t?', 'weblock-widgets' ); ?></h2>
+                <ul>
+                    <li><strong>YouTube Channel ID:</strong> <?php esc_html_e( 'YouTube oldalon a csatorna profil → URL-ben "youtube.com/channel/UC..." → ez kell.', 'weblock-widgets' ); ?></li>
+                    <li><strong>YouTube Playlist ID:</strong> <?php esc_html_e( 'Playlist-megnyitva URL-ben "list=PL..." → a PL... rész kell.', 'weblock-widgets' ); ?></li>
+                    <li><strong>Facebook Page URL:</strong> <?php esc_html_e( 'Az oldalra navigálva fent a böngészősávban (pl. https://www.facebook.com/weblockgroup).', 'weblock-widgets' ); ?></li>
+                    <li><strong>Instagram Post URL:</strong> <?php esc_html_e( 'A posztra kattintva a tetején lévő URL (pl. https://www.instagram.com/p/Cxxxxx/).', 'weblock-widgets' ); ?></li>
+                    <li><strong>Google Place ID:</strong> <?php esc_html_e( 'A Google Reviews konfigurátorban beépített kereső megtalálja cégnév alapján.', 'weblock-widgets' ); ?></li>
+                </ul>
             </div>
         </div>
         <?php

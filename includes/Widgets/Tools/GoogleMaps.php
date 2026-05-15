@@ -25,20 +25,15 @@ class GoogleMaps extends AbstractWidget {
             'label'       => __( 'Google Map', 'weblock-widgets' ),
             'icon'        => 'location-alt',
             'color'       => '#34A853',
-            'description' => __( 'Beágyazott Google térkép címmel vagy Place ID-vel.', 'weblock-widgets' ),
+            'description' => __( 'Beágyazott Google térkép címmel (nem kell API kulcs).', 'weblock-widgets' ),
+            'requires_api'=> false,
             'fields'      => [
                 [
                     'name'        => 'address',
                     'label'       => __( 'Cím', 'weblock-widgets' ),
                     'type'        => 'text',
+                    'required'    => true,
                     'placeholder' => 'Budapest, Király u. 1.',
-                    'help'        => __( 'Vagy hagyd üresen és használd a Place ID-t.', 'weblock-widgets' ),
-                ],
-                [
-                    'name'        => 'place_id',
-                    'label'       => __( 'VAGY Place ID', 'weblock-widgets' ),
-                    'type'        => 'text',
-                    'placeholder' => 'ChIJ...',
                 ],
                 [
                     'name'    => 'zoom',
@@ -62,37 +57,24 @@ class GoogleMaps extends AbstractWidget {
 
     public function render_shortcode( $atts ) {
         $atts = shortcode_atts( [
-            'address'  => '',
-            'place_id' => '',
-            'zoom'     => 15,
-            'height'   => 400,
-            'mode'     => 'place',
+            'address' => '',
+            'zoom'    => 15,
+            'height'  => 400,
         ], $atts, $this->shortcode );
 
-        $api_key = $this->get_setting( 'google_api_key' );
-        if ( ! $api_key ) {
-            return $this->error_message( __( 'Google API kulcs nincs beállítva.', 'weblock-widgets' ) );
+        if ( empty( $atts['address'] ) ) {
+            return $this->error_message( __( 'Hiányzó address paraméter.', 'weblock-widgets' ) );
         }
 
-        $params = [
-            'key'  => $api_key,
-            'zoom' => max( 1, min( 21, (int) $atts['zoom'] ) ),
-        ];
-        if ( ! empty( $atts['place_id'] ) ) {
-            $params['q'] = 'place_id:' . $atts['place_id'];
-        } elseif ( ! empty( $atts['address'] ) ) {
-            $params['q'] = $atts['address'];
-        } else {
-            return $this->error_message( __( 'Hiányzó address vagy place_id paraméter.', 'weblock-widgets' ) );
-        }
-
-        $mode   = in_array( $atts['mode'], [ 'place', 'directions', 'search' ], true ) ? $atts['mode'] : 'place';
-        $url    = add_query_arg( $params, 'https://www.google.com/maps/embed/v1/' . $mode );
-        $height = max( 150, (int) $atts['height'] );
+        $url = add_query_arg( [
+            'q'      => $atts['address'],
+            'z'      => max( 1, min( 21, (int) $atts['zoom'] ) ),
+            'output' => 'embed',
+        ], 'https://maps.google.com/maps' );
 
         return $this->load_template( 'tools/google-map.php', [
             'embed_url' => $url,
-            'height'    => $height,
+            'height'    => max( 150, (int) $atts['height'] ),
             'address'   => $atts['address'],
         ] );
     }
@@ -106,19 +88,15 @@ class GoogleMaps extends AbstractWidget {
             'icon'            => 'location-alt',
             'render_callback' => function ( $attrs ) {
                 return $this->render_shortcode( [
-                    'address'  => $attrs['address']  ?? '',
-                    'place_id' => $attrs['placeId']  ?? '',
-                    'zoom'     => $attrs['zoom']     ?? 15,
-                    'height'   => $attrs['height']   ?? 400,
-                    'mode'     => $attrs['mode']     ?? 'place',
+                    'address' => $attrs['address'] ?? '',
+                    'zoom'    => $attrs['zoom']    ?? 15,
+                    'height'  => $attrs['height']  ?? 400,
                 ] );
             },
             'attributes' => [
                 'address' => [ 'type' => 'string', 'default' => '' ],
-                'placeId' => [ 'type' => 'string', 'default' => '' ],
                 'zoom'    => [ 'type' => 'number', 'default' => 15 ],
                 'height'  => [ 'type' => 'number', 'default' => 400 ],
-                'mode'    => [ 'type' => 'string', 'default' => 'place' ],
             ],
         ] );
     }

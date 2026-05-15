@@ -1,7 +1,6 @@
 <?php
 namespace WeblockWidgets\Widgets\Social;
 
-use WeblockWidgets\Core\ApiCache;
 use WeblockWidgets\Widgets\AbstractWidget;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,31 +25,54 @@ class FacebookFeed extends AbstractWidget {
             'label'       => __( 'Facebook Feed', 'weblock-widgets' ),
             'icon'        => 'facebook',
             'color'       => '#1877F2',
-            'description' => __( 'Legutóbbi posztok az oldal Facebook oldaláról.', 'weblock-widgets' ),
+            'description' => __( 'Facebook oldal posztjai a hivatalos Page Plugin-nal (nem kell API kulcs).', 'weblock-widgets' ),
+            'requires_api'=> false,
             'fields'      => [
                 [
-                    'name'    => 'count',
-                    'label'   => __( 'Posztok száma', 'weblock-widgets' ),
-                    'type'    => 'number',
-                    'default' => 5,
-                    'min'     => 1,
-                    'max'     => 25,
+                    'name'        => 'page_url',
+                    'label'       => __( 'Facebook oldal URL', 'weblock-widgets' ),
+                    'type'        => 'text',
+                    'required'    => true,
+                    'placeholder' => 'https://www.facebook.com/weblockgroup',
+                    'help'        => __( 'A Facebook oldal teljes URL-je. Az oldalnak publikusnak kell lennie.', 'weblock-widgets' ),
                 ],
                 [
-                    'name'    => 'layout',
-                    'label'   => __( 'Elrendezés', 'weblock-widgets' ),
+                    'name'    => 'tabs',
+                    'label'   => __( 'Megjelenítendő tartalom', 'weblock-widgets' ),
                     'type'    => 'select',
-                    'default' => 'list',
+                    'default' => 'timeline',
                     'options' => [
-                        'list' => __( 'Lista', 'weblock-widgets' ),
-                        'grid' => __( 'Rács', 'weblock-widgets' ),
+                        'timeline'        => __( 'Posztok (timeline)', 'weblock-widgets' ),
+                        'events'          => __( 'Események', 'weblock-widgets' ),
+                        'messages'        => __( 'Üzenetek', 'weblock-widgets' ),
+                        'timeline,events' => __( 'Posztok + Események', 'weblock-widgets' ),
                     ],
                 ],
                 [
-                    'name'    => 'show_image',
+                    'name'    => 'height',
+                    'label'   => __( 'Magasság (px)', 'weblock-widgets' ),
+                    'type'    => 'number',
+                    'default' => 600,
+                    'min'     => 200,
+                    'max'     => 1200,
+                ],
+                [
+                    'name'    => 'show_cover',
                     'label'   => __( 'Borítókép megjelenítése', 'weblock-widgets' ),
                     'type'    => 'toggle',
                     'default' => 'yes',
+                ],
+                [
+                    'name'    => 'show_facepile',
+                    'label'   => __( 'Ismerősök arcképei', 'weblock-widgets' ),
+                    'type'    => 'toggle',
+                    'default' => 'yes',
+                ],
+                [
+                    'name'    => 'small_header',
+                    'label'   => __( 'Kompakt fejléc', 'weblock-widgets' ),
+                    'type'    => 'toggle',
+                    'default' => 'no',
                 ],
             ],
         ];
@@ -58,37 +80,33 @@ class FacebookFeed extends AbstractWidget {
 
     public function render_shortcode( $atts ) {
         $atts = shortcode_atts( [
-            'count'  => 5,
-            'layout' => 'list',
-            'show_image' => 'yes',
+            'page_url'      => '',
+            'tabs'          => 'timeline',
+            'height'        => 600,
+            'show_cover'    => 'yes',
+            'show_facepile' => 'yes',
+            'small_header'  => 'no',
         ], $atts, $this->shortcode );
 
-        $token   = $this->get_setting( 'facebook_token' );
-        $page_id = $this->get_setting( 'facebook_page_id' );
-
-        if ( ! $token || ! $page_id ) {
-            return $this->error_message( __( 'Facebook Page ID vagy token nincs beállítva.', 'weblock-widgets' ) );
+        if ( empty( $atts['page_url'] ) ) {
+            return $this->error_message( __( 'Hiányzó Facebook oldal URL.', 'weblock-widgets' ) );
         }
 
         $url = add_query_arg( [
-            'fields'       => 'id,message,permalink_url,full_picture,created_time,attachments{media,type,title,description}',
-            'access_token' => $token,
-            'limit'        => max( 1, min( 25, (int) $atts['count'] ) ),
-        ], 'https://graph.facebook.com/v19.0/' . rawurlencode( $page_id ) . '/posts' );
+            'href'           => $atts['page_url'],
+            'tabs'           => $atts['tabs'],
+            'width'          => 500,
+            'height'         => max( 200, min( 1200, (int) $atts['height'] ) ),
+            'hide_cover'     => 'yes' === $atts['show_cover']    ? 'false' : 'true',
+            'show_facepile'  => 'yes' === $atts['show_facepile'] ? 'true'  : 'false',
+            'small_header'   => 'yes' === $atts['small_header']  ? 'true'  : 'false',
+            'adapt_container_width' => 'true',
+        ], 'https://www.facebook.com/plugins/page.php' );
 
-        $data = ApiCache::instance()->fetch( $url );
-        if ( is_wp_error( $data ) ) {
-            return $this->error_message( __( 'Facebook API hiba: ', 'weblock-widgets' ) . $data->get_error_message() );
-        }
-
-        $items = isset( $data['data'] ) && is_array( $data['data'] ) ? $data['data'] : [];
-        $items = array_slice( $items, 0, max( 1, (int) $atts['count'] ) );
-
-        $layout = in_array( $atts['layout'], [ 'list', 'grid' ], true ) ? $atts['layout'] : 'list';
-
-        return $this->load_template( "social/facebook-{$layout}.php", [
-            'items'      => $items,
-            'show_image' => 'yes' === $atts['show_image'],
+        return $this->load_template( 'social/facebook-embed.php', [
+            'embed_url' => $url,
+            'height'    => max( 200, min( 1200, (int) $atts['height'] ) ),
+            'page_url'  => $atts['page_url'],
         ] );
     }
 
@@ -101,15 +119,21 @@ class FacebookFeed extends AbstractWidget {
             'icon'            => 'facebook',
             'render_callback' => function ( $attrs ) {
                 return $this->render_shortcode( [
-                    'count'      => $attrs['count']  ?? 5,
-                    'layout'     => $attrs['layout'] ?? 'list',
-                    'show_image' => ! empty( $attrs['showImage'] ) ? 'yes' : 'no',
+                    'page_url'      => $attrs['pageUrl']      ?? '',
+                    'tabs'          => $attrs['tabs']         ?? 'timeline',
+                    'height'        => $attrs['height']       ?? 600,
+                    'show_cover'    => ! empty( $attrs['showCover'] )    ? 'yes' : 'no',
+                    'show_facepile' => ! empty( $attrs['showFacepile'] ) ? 'yes' : 'no',
+                    'small_header'  => ! empty( $attrs['smallHeader'] )  ? 'yes' : 'no',
                 ] );
             },
             'attributes' => [
-                'count'     => [ 'type' => 'number',  'default' => 5 ],
-                'layout'    => [ 'type' => 'string',  'default' => 'list' ],
-                'showImage' => [ 'type' => 'boolean', 'default' => true ],
+                'pageUrl'      => [ 'type' => 'string',  'default' => '' ],
+                'tabs'         => [ 'type' => 'string',  'default' => 'timeline' ],
+                'height'       => [ 'type' => 'number',  'default' => 600 ],
+                'showCover'    => [ 'type' => 'boolean', 'default' => true ],
+                'showFacepile' => [ 'type' => 'boolean', 'default' => true ],
+                'smallHeader'  => [ 'type' => 'boolean', 'default' => false ],
             ],
         ] );
     }

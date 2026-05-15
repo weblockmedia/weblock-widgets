@@ -12,6 +12,9 @@
         if (input.type === 'checkbox') {
             return input.checked ? 'yes' : 'no';
         }
+        if (input.tagName === 'TEXTAREA') {
+            return input.value.split(/\r?\n+/).map(function (s) { return s.trim(); }).filter(Boolean).join(',');
+        }
         return input.value;
     }
 

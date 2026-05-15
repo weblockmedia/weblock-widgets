@@ -26,21 +26,21 @@ class YoutubeGallery extends AbstractWidget {
             'label'       => __( 'YouTube Gallery', 'weblock-widgets' ),
             'icon'        => 'video-alt3',
             'color'       => '#FF0000',
-            'description' => __( 'YouTube csatorna utolsó videói vagy egy playlist videói.', 'weblock-widgets' ),
+            'description' => __( 'YouTube csatorna utolsó videói vagy egy playlist videói (nem kell API kulcs).', 'weblock-widgets' ),
+            'requires_api'=> false,
             'fields'      => [
                 [
                     'name'        => 'channel_id',
                     'label'       => __( 'YouTube csatorna ID', 'weblock-widgets' ),
                     'type'        => 'text',
                     'placeholder' => 'UCBR8-60-B28hp2BmDPdntcQ',
-                    'help'        => __( 'A csatorna URL-jében az UC kezdetű string. Vagy hagyd üresen és add meg a playlist ID-t.', 'weblock-widgets' ),
+                    'help'        => __( 'A csatorna URL-jében a UC kezdetű string (pl. youtube.com/channel/UC...). Vagy hagyd üresen és add meg a playlist ID-t.', 'weblock-widgets' ),
                 ],
                 [
                     'name'        => 'playlist_id',
                     'label'       => __( 'VAGY Playlist ID', 'weblock-widgets' ),
                     'type'        => 'text',
                     'placeholder' => 'PLxxxxxxxxxxxx',
-                    'help'        => __( 'Ha kitöltöd, ez prioritást élvez a csatorna ID felett.', 'weblock-widgets' ),
                 ],
                 [
                     'name'    => 'count',
@@ -48,7 +48,8 @@ class YoutubeGallery extends AbstractWidget {
                     'type'    => 'number',
                     'default' => 6,
                     'min'     => 1,
-                    'max'     => 25,
+                    'max'     => 15,
+                    'help'    => __( 'A YouTube RSS feed maximum 15 legutóbbi videót ad vissza.', 'weblock-widgets' ),
                 ],
                 [
                     'name'    => 'layout',
@@ -72,26 +73,19 @@ class YoutubeGallery extends AbstractWidget {
             'layout'      => 'grid',
         ], $atts, $this->shortcode );
 
-        $api_key = $this->get_setting( 'youtube_api_key' );
-        if ( ! $api_key ) {
-            $api_key = $this->get_setting( 'google_api_key' );
-        }
-        if ( ! $api_key ) {
-            return $this->error_message( __( 'YouTube/Google API kulcs nincs beállítva.', 'weblock-widgets' ) );
-        }
-
-        $count = max( 1, min( 25, (int) $atts['count'] ) );
+        $count = max( 1, min( 15, (int) $atts['count'] ) );
 
         if ( ! empty( $atts['playlist_id'] ) ) {
-            $items = $this->fetch_playlist( $atts['playlist_id'], $count, $api_key );
+            $url = 'https://www.youtube.com/feeds/videos.xml?playlist_id=' . rawurlencode( $atts['playlist_id'] );
         } elseif ( ! empty( $atts['channel_id'] ) ) {
-            $items = $this->fetch_channel( $atts['channel_id'], $count, $api_key );
+            $url = 'https://www.youtube.com/feeds/videos.xml?channel_id=' . rawurlencode( $atts['channel_id'] );
         } else {
             return $this->error_message( __( 'Hiányzó channel_id vagy playlist_id paraméter.', 'weblock-widgets' ) );
         }
 
+        $items = $this->fetch_rss( $url, $count );
         if ( is_wp_error( $items ) ) {
-            return $this->error_message( __( 'YouTube API hiba: ', 'weblock-widgets' ) . $items->get_error_message() );
+            return $this->error_message( __( 'YouTube RSS hiba: ', 'weblock-widgets' ) . $items->get_error_message() );
         }
 
         $layout = in_array( $atts['layout'], [ 'grid', 'list' ], true ) ? $atts['layout'] : 'grid';
@@ -101,63 +95,60 @@ class YoutubeGallery extends AbstractWidget {
         ] );
     }
 
-    private function fetch_channel( $channel_id, $count, $api_key ) {
-        $url = add_query_arg( [
-            'key'        => $api_key,
-            'channelId'  => $channel_id,
-            'part'       => 'snippet',
-            'order'      => 'date',
-            'maxResults' => $count,
-            'type'       => 'video',
-        ], 'https://www.googleapis.com/youtube/v3/search' );
+    private function fetch_rss( $url, $count ) {
+        $cache = ApiCache::instance();
+        $cache_key = 'yt_rss_' . md5( $url );
+        $cached = $cache->get( $cache_key );
+        if ( false !== $cached ) {
+            return array_slice( $cached, 0, $count );
+        }
 
-        $data = ApiCache::instance()->fetch( $url );
-        if ( is_wp_error( $data ) ) { return $data; }
-        if ( empty( $data['items'] ) ) { return []; }
+        $response = wp_remote_get( $url, [
+            'timeout' => 15,
+            'headers' => [ 'Accept' => 'application/atom+xml' ],
+        ] );
+        if ( is_wp_error( $response ) ) {
+            return $response;
+        }
+        $code = wp_remote_retrieve_response_code( $response );
+        if ( $code < 200 || $code >= 300 ) {
+            return new \WP_Error( 'wlw_yt_rss', sprintf( 'HTTP %d', $code ) );
+        }
+        $body = wp_remote_retrieve_body( $response );
+        if ( ! $body ) {
+            return new \WP_Error( 'wlw_yt_empty', 'Empty response' );
+        }
 
-        $out = [];
-        foreach ( $data['items'] as $item ) {
-            if ( empty( $item['id']['videoId'] ) ) { continue; }
-            $out[] = [
-                'video_id'  => $item['id']['videoId'],
-                'title'     => $item['snippet']['title'] ?? '',
-                'thumbnail' => $item['snippet']['thumbnails']['high']['url']
-                              ?? $item['snippet']['thumbnails']['medium']['url']
-                              ?? $item['snippet']['thumbnails']['default']['url']
-                              ?? '',
-                'published' => $item['snippet']['publishedAt'] ?? '',
+        $previous = libxml_use_internal_errors( true );
+        $xml = simplexml_load_string( $body );
+        libxml_use_internal_errors( $previous );
+        if ( false === $xml ) {
+            return new \WP_Error( 'wlw_yt_xml', 'Invalid XML' );
+        }
+
+        $items = [];
+        $entries = $xml->entry ?? [];
+        foreach ( $entries as $entry ) {
+            $yt_ns    = $entry->children( 'yt', true );
+            $media_ns = $entry->children( 'media', true );
+            $video_id = isset( $yt_ns->videoId ) ? (string) $yt_ns->videoId : '';
+            if ( ! $video_id ) { continue; }
+
+            $thumb = isset( $media_ns->group->thumbnail ) ? (string) $media_ns->group->thumbnail->attributes()['url'] : '';
+            if ( ! $thumb ) {
+                $thumb = "https://i.ytimg.com/vi/{$video_id}/hqdefault.jpg";
+            }
+
+            $items[] = [
+                'video_id'  => $video_id,
+                'title'     => (string) $entry->title,
+                'thumbnail' => $thumb,
+                'published' => (string) $entry->published,
             ];
         }
-        return $out;
-    }
 
-    private function fetch_playlist( $playlist_id, $count, $api_key ) {
-        $url = add_query_arg( [
-            'key'        => $api_key,
-            'playlistId' => $playlist_id,
-            'part'       => 'snippet',
-            'maxResults' => $count,
-        ], 'https://www.googleapis.com/youtube/v3/playlistItems' );
-
-        $data = ApiCache::instance()->fetch( $url );
-        if ( is_wp_error( $data ) ) { return $data; }
-        if ( empty( $data['items'] ) ) { return []; }
-
-        $out = [];
-        foreach ( $data['items'] as $item ) {
-            $vid = $item['snippet']['resourceId']['videoId'] ?? '';
-            if ( ! $vid ) { continue; }
-            $out[] = [
-                'video_id'  => $vid,
-                'title'     => $item['snippet']['title'] ?? '',
-                'thumbnail' => $item['snippet']['thumbnails']['high']['url']
-                              ?? $item['snippet']['thumbnails']['medium']['url']
-                              ?? $item['snippet']['thumbnails']['default']['url']
-                              ?? '',
-                'published' => $item['snippet']['publishedAt'] ?? '',
-            ];
-        }
-        return $out;
+        $cache->set( $cache_key, $items );
+        return array_slice( $items, 0, $count );
     }
 
     public function register_block() {

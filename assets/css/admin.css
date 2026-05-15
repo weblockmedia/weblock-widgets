@@ -415,9 +415,51 @@
     max-width: 900px;
     line-height: 1.7;
 }
-.wlw-help h2 { margin-top: 0; }
+.wlw-help h2 { margin-top: 1.5rem; }
+.wlw-help h2:first-child { margin-top: 0; }
 .wlw-help h3 { margin-top: 1.5rem; }
-.wlw-help ol { padding-left: 1.5rem; }
+.wlw-help ol, .wlw-help ul { padding-left: 1.5rem; }
+.wlw-help-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+}
+.wlw-help-matrix th,
+.wlw-help-matrix td {
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--wlw-border);
+    vertical-align: middle;
+}
+.wlw-help-matrix th {
+    background: var(--wlw-bg-alt);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--wlw-muted);
+}
+.wlw-help-matrix td:nth-child(2) { text-align: center; font-size: 1.2rem; }
+@media (max-width: 600px) {
+    .wlw-help-matrix th, .wlw-help-matrix td { padding: 0.5rem 0.4rem; font-size: 0.85rem; }
+}
+
+/* ===== Textarea field ===== */
+.wlw-field textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--wlw-border);
+    border-radius: 4px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.85rem;
+    background: var(--wlw-bg);
+    resize: vertical;
+}
+.wlw-field textarea:focus {
+    border-color: var(--wlw-primary);
+    box-shadow: 0 0 0 2px rgba(34,113,177,0.15);
+    outline: none;
+}
 
 /* ===== Reszponzív finomítások ===== */
 @media (max-width: 480px) {

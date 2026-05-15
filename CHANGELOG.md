@@ -2,6 +2,33 @@
 
 A formátum [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) szerint, verziózás [Semantic Versioning](https://semver.org/lang/hu/).
 
+## [0.4.0] — 2026-05-15
+
+### Hozzáadva
+- **`requires_api` meta flag** widgetekhez (true csak Google Reviews-nál)
+- **textarea** mezőtípus a `render_field()`-ben (Instagram poszt URL-ek listája)
+- Settings notice: "4 widget API kulcs nélkül működik" magyarázat
+- Súgó oldalon mátrix-tábla: widget × kell-e API × mit kell csak
+
+### Változott (BREAKING)
+- **YouTube Gallery** → API hívás (`youtube/v3/search`) lecserélve **YouTube RSS feed**-re (`feeds/videos.xml?channel_id=...`)
+  - Field-ek változatlanok (`channel_id`, `playlist_id`)
+  - Max 15 videó (YouTube RSS limit)
+- **Google Map** → Maps Embed API + key lecserélve `maps.google.com/maps?output=embed`-re
+  - `place_id` és `mode` mezők eltávolítva (csak `address` marad)
+- **Facebook Feed** → Graph API + token lecserélve **Page Plugin** iframe-re
+  - Mezőcsere: `count` + `layout` + `show_image` ELTÁVOLÍTVA
+  - Új mezők: `page_url`, `tabs` (timeline/events/messages), `height`, `show_cover`, `show_facepile`, `small_header`
+- **Instagram Feed** → Graph API + token lecserélve **Instagram embed.js**-re
+  - Mezőcsere: `count`, `layout`, `show_caption` (limited) ELTÁVOLÍTVA
+  - Új mezők: `post_urls` (textarea, soronként/vesszővel), `columns` (1-4), `show_caption`
+- **Settings page leegyszerűsítve**: csak `google_api_key` + `cache_ttl`
+- **API status badge** a galériában: "Nem kell API kulcs" vs "API kulcs OK" vs "API kulcs kell"
+
+### Eltávolítva
+- `instagram_token`, `facebook_token`, `facebook_page_id`, `youtube_api_key` settings
+- Google Reviews helper text frissítve: "ingyenes, havi $200 credit van"
+
 ## [0.3.0] — 2026-05-15
 
 ### Hozzáadva

@@ -222,7 +222,33 @@
 .wlw-instagram__item:focus .wlw-instagram__caption { opacity: 1; }
 .wlw-instagram__empty { color: var(--wlw-muted); }
 
-/* ===== Facebook list ===== */
+/* ===== Instagram embed (no-API) ===== */
+.wlw-instagram--embed { width: 100%; }
+.wlw-instagram__embed-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--wlw-gap);
+}
+@media (min-width: 480px)  { .wlw-instagram--embed[style*="--wlw-ig-cols: 2"] .wlw-instagram__embed-grid,
+                              .wlw-instagram--embed[style*="--wlw-ig-cols: 3"] .wlw-instagram__embed-grid,
+                              .wlw-instagram--embed[style*="--wlw-ig-cols: 4"] .wlw-instagram__embed-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 768px)  { .wlw-instagram--embed[style*="--wlw-ig-cols: 3"] .wlw-instagram__embed-grid,
+                              .wlw-instagram--embed[style*="--wlw-ig-cols: 4"] .wlw-instagram__embed-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1024px) { .wlw-instagram--embed[style*="--wlw-ig-cols: 4"] .wlw-instagram__embed-grid { grid-template-columns: repeat(4, 1fr); } }
+.wlw-instagram__embed-item { min-width: 0; }
+.wlw-instagram__embed-item .instagram-media { margin: 0 !important; max-width: 100% !important; min-width: 0 !important; width: 100% !important; }
+
+/* ===== Facebook embed (no-API Page Plugin) ===== */
+.wlw-facebook--embed { width: 100%; }
+.wlw-facebook--embed iframe {
+    width: 100%;
+    height: var(--wlw-fb-height, 600px);
+    border: 0;
+    overflow: hidden;
+    display: block;
+}
+
+/* ===== Facebook list (legacy, API-based) ===== */
 .wlw-facebook__list {
     display: flex; flex-direction: column;
     gap: var(--wlw-gap);
