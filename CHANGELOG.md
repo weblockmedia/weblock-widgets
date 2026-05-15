@@ -2,6 +2,31 @@
 
 A formátum [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) szerint, verziózás [Semantic Versioning](https://semver.org/lang/hu/).
 
+## [0.8.2] — 2026-05-16
+
+### Hozzáadva (E-mail aláírás Trustindex-parity)
+- **Custom címkék** minden kontakt-sorhoz:
+  - `phone_label` (default "Mobil"), `email_label` (default "E-mail"), `website_label` (default "Web")
+  - A korábbi hard-coded "M" / "E" / "W" lecserélve
+- **Külön betűméret**:
+  - `name_size` (10-24 px, default 16)
+  - `contact_size` (10-20 px, default 13)
+- **Lábléc szöveg-blokk** (mindhárom sablonban, a hatás után):
+  - `env_footer` (textarea) — környezetvédelmi szöveg (pl. "Mielőtt kinyomtatja…")
+  - `confidential_footer` (textarea) — titoktartási / GDPR záradék
+  - Halvány szürke (#9ca3af), 10 px font, felülről elválasztó vonal
+- **Függőleges vonal** toggle (`separator_line`):
+  - Csak image / logo sablonnál, csak ha van avatar
+  - 1px széles, 80px magas, accent színben
+- **Kattintható kontakt értékek**:
+  - Phone → `tel:` link (számjegyek + `+` kivonva)
+  - Email → `mailto:` link
+  - Website → `https://` előtaggal ha nincs séma
+
+### Változott
+- Sablon `title` mező cimkéje "Beosztás" → "Pozíció" (a Trustindex terminológia)
+- Belső `wlw_sig_contact_table()` helper bevezetve — kontakt-sorok generálása generic módon
+
 ## [0.8.1] — 2026-05-15
 
 ### Hozzáadva

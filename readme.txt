@@ -4,7 +4,7 @@ Tags: google reviews, instagram, facebook, youtube, google maps
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 0.8.1
+Stable tag: 0.8.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,14 @@ A `weblock-widgets` plugin a Weblock Group saját, agency-tulajdonú megoldása 
 4. Használd a shortcode-okat vagy a Gutenberg blokkokat
 
 == Changelog ==
+
+= 0.8.2 =
+* ÚJ: E-mail aláírás bővítés Trustindex-parity-re
+* Custom címkék minden kontakt-sorhoz (Mobil / E-mail / Web → szabadon átírható)
+* Külön betűméret: Név (10-24 px) és Kontakt (10-20 px)
+* Környezetvédelmi + Titoktartási lábléc-szöveg (textarea-k)
+* Függőleges vonal toggle (image/logo sablonnál, kép és szöveg között, accent színben)
+* Kontakt értékek mostantól kattintható linkek (tel: / mailto: / http)
 
 = 0.8.1 =
 * ÚJ: "Renderelt aláírás másolása" gomb (Spark, Apple Mail, Outlook desktop kompatibilis)

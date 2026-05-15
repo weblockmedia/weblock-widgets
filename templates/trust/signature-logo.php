@@ -2,6 +2,11 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 require_once __DIR__ . '/_signature-helpers.php';
 $accent = $accent_color ? $accent_color : '#4285f4';
+$rows = [
+    [ 'label' => $phone_label,   'value' => $phone,   'href' => $phone   ? 'tel:'    . preg_replace( '/[^\d+]/', '', $phone )   : '' ],
+    [ 'label' => $email_label,   'value' => $email,   'href' => $email   ? 'mailto:' . $email                                   : '' ],
+    [ 'label' => $website_label, 'value' => $website, 'href' => wlw_sig_website_href( $website ) ],
+];
 ?>
 <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;line-height:1.45;">
     <tr>
@@ -10,23 +15,18 @@ $accent = $accent_color ? $accent_color : '#4285f4';
             <img src="<?php echo esc_url( $avatar_url ); ?>" alt="" width="96" height="96" style="display:block;width:96px;height:96px;border-radius:6px;object-fit:cover;border:0;" />
         </td>
         <?php endif; ?>
+        <?php if ( ! empty( $separator_line ) && $avatar_url ) : ?>
+        <td style="padding:0 16px 0 0;vertical-align:middle;">
+            <div style="width:1px;height:80px;background:<?php echo esc_attr( $accent ); ?>;"></div>
+        </td>
+        <?php endif; ?>
         <td style="vertical-align:top;">
-            <div style="font-size:16px;font-weight:700;color:#1a1a1a;"><?php echo esc_html( $name ); ?></div>
+            <div style="font-size:<?php echo (int) $name_size; ?>px;font-weight:700;color:#1a1a1a;"><?php echo esc_html( $name ); ?></div>
             <?php if ( $title ) : ?>
-                <div style="font-size:13px;color:#5f6368;"><?php echo esc_html( $title ); ?></div>
+                <div style="font-size:<?php echo (int) $contact_size; ?>px;color:#5f6368;"><?php echo esc_html( $title ); ?></div>
             <?php endif; ?>
 
-            <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:6px;font-size:13px;color:#1a1a1a;">
-                <?php if ( $phone ) : ?>
-                <tr><td style="padding:2px 8px 2px 0;color:#5f6368;font-weight:700;">M</td><td style="padding:2px 0;"><?php echo esc_html( $phone ); ?></td></tr>
-                <?php endif; ?>
-                <?php if ( $email ) : ?>
-                <tr><td style="padding:2px 8px 2px 0;color:#5f6368;font-weight:700;">E</td><td style="padding:2px 0;"><a href="mailto:<?php echo esc_attr( $email ); ?>" style="color:<?php echo esc_attr( $accent ); ?>;text-decoration:none;"><?php echo esc_html( $email ); ?></a></td></tr>
-                <?php endif; ?>
-                <?php if ( $website ) : ?>
-                <tr><td style="padding:2px 8px 2px 0;color:#5f6368;font-weight:700;">W</td><td style="padding:2px 0;"><a href="<?php echo esc_url( ( strpos( $website, '://' ) === false ? 'https://' : '' ) . $website ); ?>" style="color:<?php echo esc_attr( $accent ); ?>;text-decoration:none;"><?php echo esc_html( $website ); ?></a></td></tr>
-                <?php endif; ?>
-            </table>
+            <?php echo wlw_sig_contact_table( $rows, $accent, $contact_size ); ?>
 
             <?php if ( $logo_url || ! empty( $show_google_rating ) ) : ?>
                 <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:8px;">
@@ -44,6 +44,8 @@ $accent = $accent_color ? $accent_color : '#4285f4';
                     </tr>
                 </table>
             <?php endif; ?>
+
+            <?php echo wlw_sig_footer_text( $env_footer, $confidential_footer ); ?>
         </td>
     </tr>
 </table>

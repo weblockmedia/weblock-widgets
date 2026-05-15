@@ -28,7 +28,7 @@ class EmailSignature extends AbstractWidget {
             'category'    => 'trust',
             'output_type' => 'html',
             'requires_api'=> false,
-            'description' => __( 'HTML email aláírás generátor (Gmail / Outlook / Mailchimp) — Google csillagokkal.', 'weblock-widgets' ),
+            'description' => __( 'HTML email aláírás generátor (Gmail / Outlook / Spark / Apple Mail) — Google csillagokkal és lábléc-szöveggel.', 'weblock-widgets' ),
             'fields'      => [
                 [
                     'name'    => 'template',
@@ -41,6 +41,8 @@ class EmailSignature extends AbstractWidget {
                         'logo'  => __( 'Saját logóval', 'weblock-widgets' ),
                     ],
                 ],
+
+                // --- Személyes adatok ---
                 [
                     'name'        => 'name',
                     'label'       => __( 'Név', 'weblock-widgets' ),
@@ -50,7 +52,7 @@ class EmailSignature extends AbstractWidget {
                 ],
                 [
                     'name'        => 'title',
-                    'label'       => __( 'Beosztás', 'weblock-widgets' ),
+                    'label'       => __( 'Pozíció', 'weblock-widgets' ),
                     'type'        => 'text',
                     'placeholder' => 'Marketing manager',
                 ],
@@ -60,11 +62,19 @@ class EmailSignature extends AbstractWidget {
                     'type'        => 'text',
                     'placeholder' => 'My Company Kft.',
                 ],
+
+                // --- Kontakt ---
                 [
                     'name'        => 'phone',
-                    'label'       => __( 'Telefon', 'weblock-widgets' ),
+                    'label'       => __( 'Mobil / Telefon', 'weblock-widgets' ),
                     'type'        => 'text',
                     'placeholder' => '+36 30 123 4567',
+                ],
+                [
+                    'name'        => 'phone_label',
+                    'label'       => __( 'Mobil címke', 'weblock-widgets' ),
+                    'type'        => 'text',
+                    'default'     => 'Mobil',
                 ],
                 [
                     'name'        => 'email',
@@ -73,24 +83,70 @@ class EmailSignature extends AbstractWidget {
                     'placeholder' => 'kovacs.istvan@mycompany.hu',
                 ],
                 [
+                    'name'        => 'email_label',
+                    'label'       => __( 'E-mail címke', 'weblock-widgets' ),
+                    'type'        => 'text',
+                    'default'     => 'E-mail',
+                ],
+                [
                     'name'        => 'website',
                     'label'       => __( 'Weboldal', 'weblock-widgets' ),
                     'type'        => 'text',
                     'placeholder' => 'mycompany.hu',
                 ],
                 [
+                    'name'        => 'website_label',
+                    'label'       => __( 'Weboldal címke', 'weblock-widgets' ),
+                    'type'        => 'text',
+                    'default'     => 'Web',
+                ],
+
+                // --- Képek ---
+                [
                     'name'        => 'avatar_url',
-                    'label'       => __( 'Profilkép URL (Profilképpel sablonhoz)', 'weblock-widgets' ),
+                    'label'       => __( 'Profilkép URL (image / logo sablonhoz)', 'weblock-widgets' ),
                     'type'        => 'text',
                     'placeholder' => 'https://example.com/avatar.jpg',
-                    'help'        => __( 'Négyzet vagy közeli kör alakú kép, min. 200×200 px ajánlott.', 'weblock-widgets' ),
+                    'help'        => __( 'Min. 200×200 px ajánlott. A WP médiatárba feltöltött kép URL-jét másold be.', 'weblock-widgets' ),
                 ],
                 [
                     'name'        => 'logo_url',
-                    'label'       => __( 'Logó URL (Saját logóval sablonhoz)', 'weblock-widgets' ),
+                    'label'       => __( 'Logó URL (csak logo sablonhoz)', 'weblock-widgets' ),
                     'type'        => 'text',
                     'placeholder' => 'https://example.com/logo.png',
                 ],
+                [
+                    'name'    => 'separator_line',
+                    'label'   => __( 'Függőleges vonal a kép és szöveg között', 'weblock-widgets' ),
+                    'type'    => 'toggle',
+                    'default' => 'no',
+                ],
+
+                // --- Tipográfia ---
+                [
+                    'name'    => 'name_size',
+                    'label'   => __( 'Név betűméret (px)', 'weblock-widgets' ),
+                    'type'    => 'number',
+                    'default' => 16,
+                    'min'     => 10,
+                    'max'     => 24,
+                ],
+                [
+                    'name'    => 'contact_size',
+                    'label'   => __( 'Kontakt betűméret (px)', 'weblock-widgets' ),
+                    'type'    => 'number',
+                    'default' => 13,
+                    'min'     => 10,
+                    'max'     => 20,
+                ],
+                [
+                    'name'    => 'accent_color',
+                    'label'   => __( 'Kiemelő szín (hex)', 'weblock-widgets' ),
+                    'type'    => 'text',
+                    'default' => '#4285f4',
+                ],
+
+                // --- Google rating ---
                 [
                     'name'    => 'show_google_rating',
                     'label'   => __( 'Google csillag mutatása', 'weblock-widgets' ),
@@ -99,7 +155,7 @@ class EmailSignature extends AbstractWidget {
                 ],
                 [
                     'name'        => 'google_rating',
-                    'label'       => __( 'Google csillag rating', 'weblock-widgets' ),
+                    'label'       => __( 'Google csillag rating (0-5)', 'weblock-widgets' ),
                     'type'        => 'number',
                     'default'     => 5,
                     'min'         => 0,
@@ -118,13 +174,20 @@ class EmailSignature extends AbstractWidget {
                     'label'       => __( 'Google Reviews link', 'weblock-widgets' ),
                     'type'        => 'text',
                     'placeholder' => 'https://g.page/r/...',
-                    'help'        => __( 'Erre fognak rákattintani a "Google" logóra.', 'weblock-widgets' ),
+                ],
+
+                // --- Footer (jogi / környezeti) ---
+                [
+                    'name'        => 'env_footer',
+                    'label'       => __( 'Környezetvédelmi lábléc-szöveg', 'weblock-widgets' ),
+                    'type'        => 'textarea',
+                    'placeholder' => __( 'pl. "Mielőtt kinyomtatja ezt az emailt, gondoljon a környezetre."', 'weblock-widgets' ),
                 ],
                 [
-                    'name'    => 'accent_color',
-                    'label'   => __( 'Kiemelő szín (hex)', 'weblock-widgets' ),
-                    'type'    => 'text',
-                    'default' => '#4285f4',
+                    'name'        => 'confidential_footer',
+                    'label'       => __( 'Titoktartási lábléc-szöveg', 'weblock-widgets' ),
+                    'type'        => 'textarea',
+                    'placeholder' => __( 'pl. GDPR / üzleti titok záradék', 'weblock-widgets' ),
                 ],
             ],
         ];
@@ -137,15 +200,23 @@ class EmailSignature extends AbstractWidget {
             'title'                => '',
             'company'              => '',
             'phone'                => '',
+            'phone_label'          => 'Mobil',
             'email'                => '',
+            'email_label'          => 'E-mail',
             'website'              => '',
+            'website_label'        => 'Web',
             'avatar_url'           => '',
             'logo_url'             => '',
+            'separator_line'       => 'no',
+            'name_size'            => 16,
+            'contact_size'         => 13,
             'show_google_rating'   => 'yes',
             'google_rating'        => 5,
             'google_review_count'  => 0,
             'google_reviews_url'   => '',
             'accent_color'         => '#4285f4',
+            'env_footer'           => '',
+            'confidential_footer'  => '',
         ], $atts, $this->shortcode );
 
         if ( empty( $atts['name'] ) ) {
@@ -159,15 +230,23 @@ class EmailSignature extends AbstractWidget {
             'title'               => $atts['title'],
             'company'             => $atts['company'],
             'phone'               => $atts['phone'],
+            'phone_label'         => $atts['phone_label'],
             'email'               => $atts['email'],
+            'email_label'         => $atts['email_label'],
             'website'             => $atts['website'],
+            'website_label'       => $atts['website_label'],
             'avatar_url'          => $atts['avatar_url'],
             'logo_url'            => $atts['logo_url'],
+            'separator_line'      => 'yes' === $atts['separator_line'],
+            'name_size'           => max( 10, min( 24, (int) $atts['name_size'] ) ),
+            'contact_size'        => max( 10, min( 20, (int) $atts['contact_size'] ) ),
             'show_google_rating'  => 'yes' === $atts['show_google_rating'],
             'google_rating'       => max( 0, min( 5, (float) $atts['google_rating'] ) ),
             'google_review_count' => max( 0, (int) $atts['google_review_count'] ),
             'google_reviews_url'  => $atts['google_reviews_url'],
             'accent_color'        => $atts['accent_color'],
+            'env_footer'          => $atts['env_footer'],
+            'confidential_footer' => $atts['confidential_footer'],
         ] );
     }
 }

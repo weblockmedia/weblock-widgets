@@ -43,3 +43,65 @@ if ( ! function_exists( 'wlw_sig_google_block' ) ) {
         return ob_get_clean();
     }
 }
+
+if ( ! function_exists( 'wlw_sig_contact_table' ) ) {
+    function wlw_sig_contact_table( $rows, $accent, $contact_size ) {
+        if ( empty( $rows ) ) {
+            return '';
+        }
+        ob_start();
+        ?>
+        <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:6px;font-size:<?php echo (int) $contact_size; ?>px;color:#1a1a1a;font-family:Arial,Helvetica,sans-serif;">
+            <?php foreach ( $rows as $row ) :
+                if ( empty( $row['value'] ) ) { continue; }
+                $label = $row['label'] ?? '';
+                $value = $row['value'];
+                $href  = $row['href']  ?? '';
+            ?>
+                <tr>
+                    <td style="padding:2px 8px 2px 0;color:#5f6368;font-weight:700;white-space:nowrap;">
+                        <?php echo esc_html( $label ); ?>
+                    </td>
+                    <td style="padding:2px 0;">
+                        <?php if ( $href ) : ?>
+                            <a href="<?php echo esc_attr( $href ); ?>" style="color:<?php echo esc_attr( $accent ); ?>;text-decoration:none;">
+                                <?php echo esc_html( $value ); ?>
+                            </a>
+                        <?php else : ?>
+                            <?php echo esc_html( $value ); ?>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+        <?php
+        return ob_get_clean();
+    }
+}
+
+if ( ! function_exists( 'wlw_sig_footer_text' ) ) {
+    function wlw_sig_footer_text( $env, $confidential ) {
+        if ( ! $env && ! $confidential ) {
+            return '';
+        }
+        ob_start();
+        ?>
+        <div style="margin-top:12px;padding-top:8px;border-top:1px solid #e5e7eb;font-family:Arial,Helvetica,sans-serif;font-size:10px;color:#9ca3af;line-height:1.45;">
+            <?php if ( $env ) : ?>
+                <p style="margin:0 0 6px;"><?php echo esc_html( $env ); ?></p>
+            <?php endif; ?>
+            <?php if ( $confidential ) : ?>
+                <p style="margin:0;"><?php echo esc_html( $confidential ); ?></p>
+            <?php endif; ?>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+}
+
+if ( ! function_exists( 'wlw_sig_website_href' ) ) {
+    function wlw_sig_website_href( $website ) {
+        if ( ! $website ) { return ''; }
+        return strpos( $website, '://' ) === false ? 'https://' . $website : $website;
+    }
+}
