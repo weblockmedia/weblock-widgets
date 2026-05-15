@@ -1,0 +1,13 @@
+.wlw-admin h2 { margin-top: 1.5em; }
+.wlw-admin .form-table th { width: 220px; }
+.wlw-admin .form-table input.regular-text { width: clamp(280px, 50vw, 520px); }
+.wlw-admin .wlw-shortcodes { line-height: 2; }
+.wlw-admin .wlw-shortcodes code {
+    background: #f1f5f9;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+@media (max-width: 768px) {
+    .wlw-admin .form-table th { width: auto; }
+}
